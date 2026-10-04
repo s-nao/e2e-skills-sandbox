@@ -1,5 +1,6 @@
 ---
 feature: <feature>
+area: <area>                   # e2e/specs/<area>/ と e2e/tests/<area>/ のディレクトリ名
 title: <機能の日本語名>
 pages: [/, /cart]              # 対象画面のパス
 data_prefix: E2E-XX-           # この spec のテストデータはすべてこれで始める
@@ -15,11 +16,10 @@ data_requirements:
     values: { sku: E2E-XX-001, name: E2E-XX-商品A, category: D1, price: 1000, stock: 10, is_active: true }
     used_by: [S1]
   - id: D3
-    table: orders
-    description: 注文がまだ無い顧客（メールアドレスだけ予約する。行は作らない）
-    values: { customer_email: e2e-xx@example.com }
-    reserve_only: true         # 行は作らず、「存在しないこと」を確認・保証するだけ
-    used_by: [S1]
+    table: users
+    description: テストユーザー（注文が 0 件の状態で始める）
+    values: { email: e2e-xx@example.com, password: E2E-xx-pass1, name: E2E-XX-ユーザー, is_active: true }
+    used_by: [S2]
 ---
 
 # <機能の日本語名> E2E テスト仕様
@@ -35,7 +35,9 @@ data_requirements:
 
 - mode: auto
 - perf: false
-- 前提データ: D1, D2, D3
+- tags: [smoke]
+- ログイン: なし
+- 前提データ: D1, D2
 - 手順:
   1. `/` を開く
   2. `search-input` に「E2E-XX-商品A」と入力し `search-button` を押す
@@ -44,6 +46,8 @@ data_requirements:
   - DB: 変化なし
 
 ### S2: …
+
+- ログイン: D3
 
 ## 未確定の点
 

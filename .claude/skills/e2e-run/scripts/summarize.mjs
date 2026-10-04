@@ -24,6 +24,7 @@ function walk(suite, file) {
         api: attach('api-timings') ?? [],
         nav: attach('nav-timings'),
         consoleErrors: attach('console-errors') ?? [],
+        authErrors: attach('auth-errors') ?? [],
       })
     }
   }
@@ -40,12 +41,15 @@ out.push(`# E2E 実行結果`, '')
 out.push(`- 日時: ${now}`)
 out.push(`- 結果: ✅ ${count('passed')} / ❌ ${count('failed') + count('timedOut')} / ⏭️ ${count('skipped')}（全 ${rows.length} 件）`, '')
 
-out.push('## シナリオ', '', '| 結果 | シナリオ | 所要 | API 呼び出し | API 最大 | load |', '|---|---|---:|---:|---:|---:|')
-for (const r of rows) {
-  const apiMax = r.api.length ? Math.max(...r.api.map((a) => a.ms)) : 0
-  out.push(
-    `| ${icon[r.status] ?? r.status} | ${r.title} | ${(r.duration / 1000).toFixed(1)}s | ${r.api.length} | ${apiMax}ms | ${r.nav ? r.nav.load + 'ms' : '-'} |`,
-  )
+out.push('## シナリオ')
+for (const file of [...new Set(rows.map((r) => r.file))]) {
+  out.push('', `### \`${file}\``, '', '| 結果 | シナリオ | 所要 | API 呼び出し | API 最大 | load |', '|---|---|---:|---:|---:|---:|')
+  for (const r of rows.filter((x) => x.file === file)) {
+    const apiMax = r.api.length ? Math.max(...r.api.map((a) => a.ms)) : 0
+    out.push(
+      `| ${icon[r.status] ?? r.status} | ${r.title} | ${(r.duration / 1000).toFixed(1)}s | ${r.api.length} | ${apiMax}ms | ${r.nav ? r.nav.load + 'ms' : '-'} |`,
+    )
+  }
 }
 
 // API エンドポイントごとの集計（クエリ文字列は除く）
@@ -77,6 +81,12 @@ if (failed.length) {
     for (const p of r.screenshots) out.push(`- screenshot: \`${p}\``)
     out.push('')
   }
+}
+
+const withAuth = rows.filter((r) => r.authErrors.length)
+if (withAuth.length) {
+  out.push('', '## 想定外の 401（ログイン状態の問題の可能性）', '')
+  for (const r of withAuth) for (const a of r.authErrors) out.push(`- ${r.title}: \`${a.method} ${a.url}\``)
 }
 
 const withConsole = rows.filter((r) => r.consoleErrors.length)

@@ -3,3 +3,4 @@ e2e/test-results/
 e2e/playwright-report/
 __pycache__/
 .DS_Store
+e2e/.auth/

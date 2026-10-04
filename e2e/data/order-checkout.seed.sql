@@ -1,11 +1,12 @@
 -- e2e-data: order-checkout seed
--- spec: e2e/specs/order-checkout.md / data_prefix: E2E-OC-
+-- spec: e2e/specs/checkout/order-checkout.md / data_prefix: E2E-OC-
 -- 何度流しても同じ状態になるよう、先に cleanup と同じ削除をする
 
 DELETE FROM order_items
 WHERE product_id IN (SELECT id FROM products WHERE sku LIKE 'E2E-OC-%')
-   OR order_id IN (SELECT id FROM orders WHERE customer_email = 'e2e-oc@example.com');
-DELETE FROM orders WHERE customer_email = 'e2e-oc@example.com';
+   OR order_id IN (SELECT o.id FROM orders o JOIN users u ON u.id = o.user_id WHERE u.email = 'e2e-oc@example.com');
+DELETE FROM orders WHERE user_id IN (SELECT id FROM users WHERE email = 'e2e-oc@example.com');
+DELETE FROM users WHERE email = 'e2e-oc@example.com';
 DELETE FROM products WHERE sku LIKE 'E2E-OC-%';
 DELETE FROM categories WHERE name LIKE 'E2E-OC-%';
 
@@ -23,12 +24,6 @@ FROM (VALUES
 ) AS v(sku, name, price, stock, is_active)
 CROSS JOIN (SELECT id FROM categories WHERE name = 'E2E-OC-カテゴリ') AS c;
 
--- D6 は reserve_only（行は作らない。上の DELETE で注文が無い状態を保証）
-
-SELECT 'D1' AS id, 'categories' AS t, id AS db_id, name, NULL AS sku, NULL::int AS price, NULL::int AS stock
-FROM categories WHERE name = 'E2E-OC-カテゴリ'
-UNION ALL
-SELECT CASE sku WHEN 'E2E-OC-001' THEN 'D2' WHEN 'E2E-OC-002' THEN 'D3' WHEN 'E2E-OC-003' THEN 'D4' ELSE 'D5' END,
-       'products', id, name, sku, price, stock
-FROM products WHERE sku LIKE 'E2E-OC-%'
-ORDER BY 1;
+-- D6（パスワードは pgcrypto で bcrypt にする）
+INSERT INTO users (email, password_hash, name, is_active)
+VALUES ('e2e-oc@example.com', crypt('E2E-oc-pass1', gen_salt('bf')), 'E2E-OC-ユーザー', TRUE);

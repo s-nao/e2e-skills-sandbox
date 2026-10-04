@@ -12,10 +12,10 @@ argument-hint: <feature> [テストしたい内容の説明]
 すでに成果物があり、元にしたファイルより新しければ、その工程は飛ばしてよい（飛ばしたことは報告する）。
 
 ```
-e2e-spec        → e2e/specs/<feature>.md
+e2e-spec        → e2e/specs/<area>/<feature>.md
 e2e-data-check  → e2e/data/<feature>.check.md
-e2e-data-seed   → e2e/data/<feature>.{seed,cleanup}.sql, <feature>.fixtures.json
-e2e-run         → e2e/tests/<feature>.spec.ts, e2e/reports/<feature>-<日時>.md
+e2e-data-seed   → e2e/data/<feature>.{seed,cleanup,fixtures}.sql, <feature>.fixtures.json
+e2e-run         → e2e/tests/<area>/<feature>.spec.ts, e2e/reports/<feature>-<日時>.md
 ```
 
 ## 流れ

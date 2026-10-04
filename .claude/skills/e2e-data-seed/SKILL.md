@@ -9,7 +9,7 @@ description: E2E テスト仕様とデータ確認結果をもとに、テスト
 
 ## 入力
 
-- `e2e/specs/<feature>.md`（`data_prefix` と `data_requirements`）
+- `e2e/specs/<area>/<feature>.md`（`data_prefix` と `data_requirements`）
 - `e2e/data/<feature>.check.md`（e2e-data-check の結果）。無い、または古い（spec の更新より前）ときは、先に e2e-data-check を実行する。
 - 判定に `CONFLICT` があるときは投入しない。spec の修正が必要だと報告して止まる。
 
@@ -26,14 +26,16 @@ description: E2E テスト仕様とデータ確認結果をもとに、テスト
 
 - **1 行目は必ず** `-- e2e-data: <feature> seed` / `cleanup` / `fixtures` のどれか。`scripts/db-exec.sh` はこの行が無いファイルの実行を拒否する。
 - 削除の条件は、必ず `data_prefix` での前方一致（`LIKE 'E2E-XX-%'`）か、spec に書かれた識別子の完全一致だけにする。条件なしの `DELETE` や `TRUNCATE` は書かない。
-- 外部キーの順に削除する: `order_items` → `orders` → `products` → `categories`。
+- 外部キーの順に削除する: `order_items` → `orders` → `users` → `products` → `categories`。
   - 他人の注文に、プレフィックスの商品が含まれている可能性があるので、`order_items` は `product_id IN (SELECT id FROM products WHERE sku LIKE ...)` の条件で消す。
+  - テストユーザーの注文は `user_id IN (SELECT id FROM users WHERE email = '...')` で消す。`sessions` は `users` を消せば `ON DELETE CASCADE` で消える。
+- テストユーザーのパスワードは `crypt('<spec の password>', gen_salt('bf'))` でハッシュにして入れる（pgcrypto）。
 - id はハードコードしない。カテゴリなどの参照は `(SELECT id FROM categories WHERE name = '...')` で解決する。
 - 性能測定用に大量のデータが必要な場合は、`generate_series` で作る（例: `E2E-PERF-00001`〜）。件数は spec の `values` に書かれたものに従う。
 
 ### fixtures.sql / fixtures.json の形
 
-fixtures.sql は `jsonb_pretty(jsonb_build_object(...))` で、データ ID ごとに `(SELECT jsonb_build_object(...) FROM ... WHERE <識別子>)` を並べる。`reserve_only` のデータは値をそのまま書く。実例: `e2e/data/order-checkout.fixtures.sql`
+fixtures.sql は `jsonb_pretty(jsonb_build_object(...))` で、データ ID ごとに `(SELECT jsonb_build_object(...) FROM ... WHERE <識別子>)` を並べる。ユーザーには `password` を入れる。DB にはハッシュしか無いので、spec の値を文字列としてそのまま書く（テスト用の値に限る）。実例: `e2e/data/order-checkout.fixtures.sql`
 
 ```json
 {
@@ -42,14 +44,15 @@ fixtures.sql は `jsonb_pretty(jsonb_build_object(...))` で、データ ID ご�
   "target": "local docker compose (service=db, database=shop)",
   "data": {
     "D1": { "table": "categories", "id": 4, "name": "E2E-XX-カテゴリ" },
-    "D2": { "table": "products", "id": 12, "sku": "E2E-XX-001", "name": "E2E-XX-商品A", "price": 1000, "stock": 10 }
+    "D2": { "table": "products", "id": 12, "sku": "E2E-XX-001", "name": "E2E-XX-商品A", "price": 1000, "stock": 10 },
+    "D3": { "table": "users", "id": 3, "email": "e2e-xx@example.com", "password": "E2E-xx-pass1", "name": "E2E-XX-ユーザー" }
   }
 }
 ```
 
 ## 手順
 
-1. 入力を読み、上のルールで 3 ファイルのうち SQL の 2 本を書く。
+1. 入力を読み、上のルールで SQL の 3 本（cleanup / seed / fixtures）を書く。
 2. **投入計画を提示する**。接続先（`scripts/db-query.sh "SELECT 1"` の `-- target:` 行）、削除される行数の見込み（`SELECT count(*)` で実測）、投入する行数。
 3. 接続先で分岐する:
    - ローカルの docker（`E2E_DB_URL` 未設定）→ そのまま実行してよい。

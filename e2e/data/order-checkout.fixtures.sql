@@ -15,6 +15,8 @@ SELECT jsonb_pretty(jsonb_build_object(
            FROM products WHERE sku = 'E2E-OC-003'),
     'D5', (SELECT jsonb_build_object('table', 'products', 'id', id, 'sku', sku, 'name', name, 'price', price, 'stock', stock)
            FROM products WHERE sku = 'E2E-OC-004'),
-    'D6', jsonb_build_object('table', 'orders', 'customer_email', 'e2e-oc@example.com')
+    -- パスワードは DB にはハッシュしか無いので、spec の値をそのまま書く（テスト用の値）
+    'D6', (SELECT jsonb_build_object('table', 'users', 'id', id, 'email', email, 'password', 'E2E-oc-pass1', 'name', name)
+           FROM users WHERE email = 'e2e-oc@example.com')
   )
 ));
