@@ -12,6 +12,7 @@ const form = reactive({ sku: '', name: '', description: '', category_id: 0, pric
 const submitting = ref(false)
 const error = ref('')
 const notFound = ref(false)
+const loaded = ref(false)
 
 onMounted(async () => {
   categories.value = await api.categories()
@@ -25,6 +26,7 @@ onMounted(async () => {
   } else {
     form.category_id = categories.value[0]?.id ?? 0
   }
+  loaded.value = true
 })
 
 async function submit() {
@@ -45,7 +47,7 @@ async function submit() {
 <template>
   <h2>{{ id ? '商品を編集' : '商品を登録' }}</h2>
   <p v-if="notFound" class="error" role="alert" data-testid="admin-form-notfound">商品が見つかりません</p>
-  <form v-else class="form" data-testid="admin-product-form" @submit.prevent="submit">
+  <form v-else-if="loaded" class="form" data-testid="admin-product-form" @submit.prevent="submit">
     <label>SKU <input v-model="form.sku" required maxlength="40" pattern="[A-Za-z0-9_\-]+" data-testid="form-sku" /></label>
     <label>商品名 <input v-model="form.name" required maxlength="100" data-testid="form-name" /></label>
     <label>説明 <textarea v-model="form.description" maxlength="1000" data-testid="form-description" /></label>
