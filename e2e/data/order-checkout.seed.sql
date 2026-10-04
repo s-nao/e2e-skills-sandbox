@@ -13,17 +13,15 @@ DELETE FROM categories WHERE name LIKE 'E2E-OC-%';
 -- D1
 INSERT INTO categories (name) VALUES ('E2E-OC-カテゴリ');
 
--- D2〜D5
+-- 商品
 INSERT INTO products (sku, name, description, category_id, price, stock, is_active)
 SELECT v.sku, v.name, 'E2E テスト用', c.id, v.price, v.stock, v.is_active
 FROM (VALUES
-  ('E2E-OC-001', 'E2E-OC-ノート',   500, 10, TRUE),   -- D2
-  ('E2E-OC-002', 'E2E-OC-ペン',     200,  2, TRUE),   -- D3
-  ('E2E-OC-003', 'E2E-OC-消しゴム', 100,  0, TRUE),   -- D4
-  ('E2E-OC-004', 'E2E-OC-定規',     300,  5, FALSE)   -- D5
+  ('E2E-OC-001', 'E2E-OC-ノート', 500, 10, TRUE),   -- D2
+  ('E2E-OC-002', 'E2E-OC-ペン', 200, 2, TRUE)   -- D3
 ) AS v(sku, name, price, stock, is_active)
 CROSS JOIN (SELECT id FROM categories WHERE name = 'E2E-OC-カテゴリ') AS c;
 
--- D6（パスワードは pgcrypto で bcrypt にする）
+-- テストユーザー（パスワードは pgcrypto で bcrypt にする）
 INSERT INTO users (email, password_hash, name, is_active)
 VALUES ('e2e-oc@example.com', crypt('E2E-oc-pass1', gen_salt('bf', 12)), 'E2E-OC-ユーザー', TRUE);

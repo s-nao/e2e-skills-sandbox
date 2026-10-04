@@ -1,0 +1,42 @@
+{
+    "data": {
+        "D1": {
+            "id": 6,
+            "name": "E2E-PD-カテゴリ",
+            "table": "categories"
+        },
+        "D2": {
+            "id": 20,
+            "sku": "E2E-PD-001",
+            "name": "E2E-PD-ノート",
+            "price": 500,
+            "stock": 10,
+            "table": "products"
+        },
+        "D3": {
+            "id": 21,
+            "sku": "E2E-PD-002",
+            "name": "E2E-PD-消しゴム",
+            "price": 100,
+            "stock": 0,
+            "table": "products"
+        },
+        "D4": {
+            "id": 22,
+            "sku": "E2E-PD-003",
+            "name": "E2E-PD-定規",
+            "price": 300,
+            "stock": 5,
+            "table": "products"
+        },
+        "D5": {
+            "id": 8,
+            "name": "E2E-PD-ユーザー",
+            "email": "e2e-pd@example.com",
+            "table": "users",
+            "password": "E2E-pd-pass1"
+        }
+    },
+    "feature": "product-detail",
+    "generatedAt": "2026-10-04T18:22:20+09:00"
+}
