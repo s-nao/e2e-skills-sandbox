@@ -21,7 +21,7 @@ E2E テストを 4 つのスキルに分けて回すための試作リポジト�
 - セッション Cookie（`session`、HttpOnly）。サーバー側は `sessions` テーブルにトークンの SHA-256 を保存する。実装は `api/app/auth.py` と `web/src/auth.ts`
 - 注文（`POST /api/orders`）と注文履歴はログイン必須。商品の閲覧とカートはログインなしで使える
 - 開発用ユーザー（`db/init/002_seed.sql`）: `customer@example.com` / `password123`。`inactive@example.com` は停止中でログインできない
-- テストデータのユーザーは SQL で作れる: `crypt('<pw>', gen_salt('bf'))`（pgcrypto）
+- テストデータのユーザーは SQL で作れる: `crypt('<pw>', gen_salt('bf', 12))`（pgcrypto）
 - E2E でログイン済みから始めるテストは `test.use({ loginAs: fixtures.data.D<n> })`。API でログインし、ワーカーごとに使い回す（`e2e/support/fixtures.ts`）
 
 ## E2E スキル

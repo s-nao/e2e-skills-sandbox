@@ -1,0 +1,33 @@
+{
+    "data": {
+        "D1": {
+            "id": 4,
+            "name": "E2E-LG-ユーザー",
+            "email": "e2e-lg@example.com",
+            "table": "users",
+            "password": "E2E-lg-pass1"
+        },
+        "D2": {
+            "id": 5,
+            "name": "E2E-LG-停止ユーザー",
+            "email": "e2e-lg-inactive@example.com",
+            "table": "users",
+            "password": "E2E-lg-pass1"
+        },
+        "D3": {
+            "id": 6,
+            "name": "E2E-LG-ログアウト",
+            "email": "e2e-lg-logout@example.com",
+            "table": "users",
+            "password": "E2E-lg-pass1"
+        },
+        "D4": {
+            "email": "e2e-lg-nobody@example.com",
+            "table": "users",
+            "exists": false,
+            "password": "E2E-lg-pass1"
+        }
+    },
+    "feature": "login",
+    "generatedAt": "2026-10-04T18:05:14+09:00"
+}

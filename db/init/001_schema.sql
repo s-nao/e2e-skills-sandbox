@@ -4,7 +4,7 @@ CREATE EXTENSION IF NOT EXISTS pgcrypto;
 CREATE TABLE users (
     id            SERIAL PRIMARY KEY,
     email         TEXT NOT NULL UNIQUE,
-    password_hash TEXT NOT NULL,                               -- bcrypt。crypt('pw', gen_salt('bf')) でも作れる
+    password_hash TEXT NOT NULL,                               -- bcrypt。crypt('pw', gen_salt('bf', 12)) でも作れる
     name          TEXT NOT NULL,
     is_active     BOOLEAN NOT NULL DEFAULT TRUE,               -- FALSE はログイン不可（退会・停止）
     created_at    TIMESTAMPTZ NOT NULL DEFAULT now()

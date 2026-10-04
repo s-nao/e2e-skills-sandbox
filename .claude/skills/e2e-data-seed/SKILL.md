@@ -29,7 +29,8 @@ description: E2E テスト仕様とデータ確認結果をもとに、テスト
 - 外部キーの順に削除する: `order_items` → `orders` → `users` → `products` → `categories`。
   - 他人の注文に、プレフィックスの商品が含まれている可能性があるので、`order_items` は `product_id IN (SELECT id FROM products WHERE sku LIKE ...)` の条件で消す。
   - テストユーザーの注文は `user_id IN (SELECT id FROM users WHERE email = '...')` で消す。`sessions` は `users` を消せば `ON DELETE CASCADE` で消える。
-- テストユーザーのパスワードは `crypt('<spec の password>', gen_salt('bf'))` でハッシュにして入れる（pgcrypto）。
+- テストユーザーのパスワードは `crypt('<spec の password>', gen_salt('bf', 12))` でハッシュにして入れる（pgcrypto）。
+  - cost の `12` は省略しない。省略すると cost 6 になり、`api/app/auth.py` の `BCRYPT_COST` と食い違って、存在しないユーザーとのログインの応答時間に差が出る。
 - id はハードコードしない。カテゴリなどの参照は `(SELECT id FROM categories WHERE name = '...')` で解決する。
 - 性能測定用に大量のデータが必要な場合は、`generate_series` で作る（例: `E2E-PERF-00001`〜）。件数は spec の `values` に書かれたものに従う。
 

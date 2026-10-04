@@ -25,7 +25,8 @@ spec の `data_requirements` を 1 件ずつ DB と突き合わせ、**作成が
    - **存在**: 識別子（sku / name / email）で検索し、行があるか。
    - **一致**: 行がある場合、`values` の各値（stock, price, is_active など）と一致しているか。
      - ユーザーのパスワードは、ハッシュと照合して確かめる（読み取り専用でできる）:
-       `SELECT password_hash = crypt('<spec の password>', password_hash) AS password_ok FROM users WHERE email = '...'`
+       `SELECT password_hash = crypt('<spec の password>', password_hash) AS password_ok, substring(password_hash, 5, 2) AS cost FROM users WHERE email = '...'`
+     - ハッシュの cost が `12`（`api/app/auth.py` の `BCRYPT_COST`）でなければ `MISMATCH`。
      - ユーザーに、前回のテストの注文（`orders.user_id`）やセッション（`sessions.user_id`）が残っていれば `MISMATCH`（注文 0 件で始める前提が崩れるため）。
    - **衝突**: プレフィックス以外の既存データが、テストの結果に影響しないか。例:
      - 検索のシナリオで、検索語が既存の商品名にも当たってしまわないか（`name ILIKE '%検索語%'` の件数）

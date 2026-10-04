@@ -14,8 +14,11 @@ from .schemas import LoginIn, UserOut
 
 COOKIE_NAME = "session"
 SESSION_TTL = timedelta(days=7)
-# ユーザーが存在しないときも bcrypt の照合をして、応答時間で存在を推測されないようにする
-_DUMMY_HASH = bcrypt.hashpw(b"dummy", bcrypt.gensalt()).decode()
+# パスワードのハッシュの強度。ユーザーを作る SQL（crypt('pw', gen_salt('bf', 12))）と必ずそろえる
+BCRYPT_COST = 12
+# ユーザーが存在しないときも bcrypt の照合をして、応答時間で存在を推測されないようにする。
+# cost が実際のユーザーのハッシュと違うと照合時間に差が出て、かえって存在が分かってしまう
+_DUMMY_HASH = bcrypt.hashpw(b"dummy", bcrypt.gensalt(rounds=BCRYPT_COST)).decode()
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
 

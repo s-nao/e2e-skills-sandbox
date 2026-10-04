@@ -26,4 +26,4 @@ CROSS JOIN (SELECT id FROM categories WHERE name = 'E2E-OC-カテゴリ') AS c;
 
 -- D6（パスワードは pgcrypto で bcrypt にする）
 INSERT INTO users (email, password_hash, name, is_active)
-VALUES ('e2e-oc@example.com', crypt('E2E-oc-pass1', gen_salt('bf')), 'E2E-OC-ユーザー', TRUE);
+VALUES ('e2e-oc@example.com', crypt('E2E-oc-pass1', gen_salt('bf', 12)), 'E2E-OC-ユーザー', TRUE);

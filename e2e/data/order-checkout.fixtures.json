@@ -1,12 +1,12 @@
 {
     "data": {
         "D1": {
-            "id": 8,
+            "id": 4,
             "name": "E2E-OC-カテゴリ",
             "table": "categories"
         },
         "D2": {
-            "id": 28,
+            "id": 12,
             "sku": "E2E-OC-001",
             "name": "E2E-OC-ノート",
             "price": 500,
@@ -14,7 +14,7 @@
             "table": "products"
         },
         "D3": {
-            "id": 29,
+            "id": 13,
             "sku": "E2E-OC-002",
             "name": "E2E-OC-ペン",
             "price": 200,
@@ -22,7 +22,7 @@
             "table": "products"
         },
         "D4": {
-            "id": 30,
+            "id": 14,
             "sku": "E2E-OC-003",
             "name": "E2E-OC-消しゴム",
             "price": 100,
@@ -30,7 +30,7 @@
             "table": "products"
         },
         "D5": {
-            "id": 31,
+            "id": 15,
             "sku": "E2E-OC-004",
             "name": "E2E-OC-定規",
             "price": 300,
@@ -38,7 +38,7 @@
             "table": "products"
         },
         "D6": {
-            "id": 5,
+            "id": 3,
             "name": "E2E-OC-ユーザー",
             "email": "e2e-oc@example.com",
             "table": "users",
@@ -46,5 +46,5 @@
         }
     },
     "feature": "order-checkout",
-    "generatedAt": "2026-10-04T17:55:41+09:00"
+    "generatedAt": "2026-10-04T18:05:13+09:00"
 }
