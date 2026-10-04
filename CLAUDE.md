@@ -31,3 +31,9 @@ E2E テストを 4 つのスキルに分けて回すための試作リポジト�
 - DB に書き込むのは e2e-data-seed だけ。他のスキルは `scripts/db-query.sh`（読み取り専用）しか使わない。
 - テストデータは機能ごとの `data_prefix`（例: `E2E-OC-`）で始め、作成も削除もこのプレフィックスで行う。
 - 開発/検証環境の DB を使うときは `E2E_DB_URL` と `E2E_DB_ALLOWED_HOSTS` を設定する。書き込みは毎回ユーザーの了承を得る。
+
+## 仕様書
+
+- `docs/app-guide.html` が仕様書（動作仕様とコードリーディングの要点）。claude.ai の Artifact として公開している: https://claude.ai/artifact/SV4AaKSYwfA6Ujvu9a2WQG
+- 画面・API・DB・E2E の構成を変えたら、同じ変更の中で `docs/app-guide.html` も更新し、Artifact ツールに上の URL を `url` として渡して公開し直す（新しい URL を作らない）。更新前に `action: "read"` で公開中の版を読む
+- 行番号を書いている箇所は、変更後のコードで確かめ直す。フッターと冒頭のコミット ID も更新する
