@@ -1,0 +1,83 @@
+name: E2E
+
+on:
+  pull_request:
+
+concurrency:
+  group: e2e-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  e2e:
+    runs-on: ubuntu-26.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: e2e/package-lock.json
+
+      - name: Start app
+        run: docker compose up -d
+
+      - name: Wait for web and api
+        run: |
+          curl --retry 60 --retry-delay 3 --retry-all-errors --fail -s -o /dev/null http://localhost:5173/
+          curl --retry 30 --retry-delay 2 --retry-all-errors --fail -s -o /dev/null http://localhost:5173/api/health
+
+      - name: Install e2e dependencies
+        working-directory: e2e
+        run: npm ci
+
+      - name: Cache Playwright browsers
+        id: playwright-cache
+        uses: actions/cache@v6
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('e2e/package-lock.json') }}
+
+      - name: Install Playwright browsers
+        working-directory: e2e
+        run: |
+          if [ "${{ steps.playwright-cache.outputs.cache-hit }}" = "true" ]; then
+            npx playwright install-deps chromium
+          else
+            npx playwright install --with-deps chromium
+          fi
+
+      - name: Seed test data and regenerate fixtures
+        run: |
+          for f in e2e/data/*.seed.sql; do scripts/db-exec.sh "$f"; done
+          for f in e2e/data/*.fixtures.sql; do scripts/db-query.sh --raw < "$f" > "${f%.sql}.json"; done
+
+      - name: Run E2E
+        working-directory: e2e
+        env:
+          CI: "true"
+        run: npx playwright test
+
+      - name: Write job summary
+        if: always()
+        run: |
+          if [ -f e2e/test-results/results.json ]; then
+            node .claude/skills/e2e-run/scripts/summarize.mjs e2e/test-results/results.json >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "テスト結果（results.json）がありません。Run E2E より前のステップで失敗しています。" >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Show service logs on failure
+        if: failure()
+        run: docker compose logs --tail=100
+
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: playwright-report
+          path: |
+            e2e/playwright-report/
+            e2e/test-results/
+          retention-days: 7
