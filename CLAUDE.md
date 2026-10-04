@@ -15,6 +15,7 @@ E2E テストを 4 つのスキルに分けて回すための試作リポジト�
 ## コマンド
 
 - 起動: `docker compose up -d`（初回は web の npm install で 30 秒ほどかかる）
+- 型チェック: `cd web && npm run typecheck`、`cd admin && npm run typecheck`（`vue-tsc --noEmit`）。CI の `typecheck` ジョブも同じ。Node は 24（`docker-compose.yml` と CI）
 - DB を初期状態に戻す: `docker compose down -v && docker compose up -d`
 - E2E: `cd e2e && npx playwright test`（Playwright のプロジェクトは `chromium` = お客さん画面、`admin` = 管理画面 :5174。`tests/admin/` は admin だけで動く）。`tests/<area>/` でまとまりごと、`--grep @smoke` で主経路だけ
 
