@@ -288,7 +288,7 @@
 
   <main>
     <header class="doc-head">
-      <span class="eyebrow">e2e-skills-sandbox · commit faa35b7 · 2026-10-04</span>
+      <span class="eyebrow">e2e-skills-sandbox · commit 5fa6898 · 2026-10-04</span>
       <h1>Sample Shop 仕様書</h1>
       <p class="lede">商品の検索から注文までと、店舗管理者向けの管理画面を扱うサンプルショップ（ログイン付き）の動作仕様と、コードを読むときの要点をまとめたものです。E2E テストのスキル（spec / data-check / data-seed / run）を試すための題材です。</p>
     </header>
@@ -748,7 +748,7 @@ sequenceDiagram
               <tr><td class="nowrap"><span class="path">e2e/tests/&lt;area&gt;/</span></td><td>テスト</td><td><code>catalog/product-list</code>（5 件）、<code>catalog/product-detail</code>（5 件）、<code>checkout/order-checkout</code>（3 件）、<code>account/login</code>（9 件）、<code>admin/admin-products</code>（10 件）、<code>admin/admin-csv</code>（9 件）、<code>admin/admin-sales</code>（7 件）。ファイル同士は並列、ファイルの中は順番に流れる。商品一覧・詳細・注文はログインなし／ありの表示の違い（ヘッダー、カートの <code>place-order</code> ↔ <code>login-to-order</code>）をそれぞれ確かめる。管理画面のテストは Playwright の別プロジェクト <code>admin</code>（baseURL は :5174、<code>E2E_ADMIN_BASE_URL</code> で変更可）で流れ、管理者・一般ユーザー・未ログインの 3 通りの権限と、削除や取り込み後の DB の状態を確かめる。確認ダイアログ（<code>window.confirm</code>）は <code>page.once('dialog', …)</code> で受ける</td></tr>
               <tr><td class="nowrap"><span class="path">e2e/data/*.fixtures.json</span></td><td>テストデータの値</td><td>seed のたびに id が変わるので手で書かない。<code>*.fixtures.sql</code> の出力を保存する</td></tr>
               <tr><td class="nowrap"><span class="path">.claude/skills/e2e-run/scripts/summarize.mjs</span></td><td>レポート</td><td>Playwright の <code>results.json</code> から添付を取り出し、シナリオ別・API 別に集計する</td></tr>
-              <tr><td class="nowrap"><span class="path">.github/workflows/e2e.yml</span></td><td>CI（GitHub Actions）</td><td>プルリクエストの作成・更新で動く。<code>docker compose up -d</code> → web・admin・api の起動待ち → <code>db-exec.sh</code> で <code>*.seed.sql</code> を流す → <code>*.fixtures.sql</code> から <code>fixtures.json</code> を作り直す（id が毎回変わるため）→ <code>npx playwright test</code>（<code>chromium</code> と <code>admin</code> の 2 プロジェクト）。結果は <code>summarize.mjs</code> で Job Summary（実行画面の上部）に出す。同じ PR の古い実行は <code>concurrency</code> で取り消す。レポートと trace は artifact に 7 日間保存する。npm と Playwright のブラウザはキャッシュする</td></tr>
+              <tr><td class="nowrap"><span class="path">.github/workflows/e2e.yml</span></td><td>CI（GitHub Actions）</td><td>プルリクエストの作成・更新で動く。Node は 24（<code>docker-compose.yml</code> の <code>node:24-alpine</code> も同じ）。<code>typecheck</code> ジョブが web と admin を並列で <code>npm ci</code> → <code>npm run typecheck</code>（<code>vue-tsc --noEmit</code>）で型チェックし、<code>e2e</code> ジョブとは独立に動く。<code>e2e</code> ジョブは <code>docker compose up -d</code> → web・admin・api の起動待ち → <code>db-exec.sh</code> で <code>*.seed.sql</code> を流す → <code>*.fixtures.sql</code> から <code>fixtures.json</code> を作り直す（id が毎回変わるため）→ <code>npx playwright test</code>（<code>chromium</code> と <code>admin</code> の 2 プロジェクト）。結果は <code>summarize.mjs</code> で Job Summary（実行画面の上部）に出す。同じ PR の古い実行は <code>concurrency</code> で取り消す。レポートと trace は artifact に 7 日間保存する。npm と Playwright のブラウザはキャッシュする</td></tr>
             </tbody>
           </table>
         </div>
@@ -778,7 +778,7 @@ sequenceDiagram
         <p class="note">「価格のずれ」「ログインの試行回数」「ログアウト後のカート」は、各 spec の「未確定の点」にも記録しています（<span class="path">e2e/specs/checkout/order-checkout.md</span>、<span class="path">e2e/specs/account/login.md</span>）。以前あった「注文履歴が誰でも見られる」問題は、ログインの導入で解消しました。</p>
       </section>
 
-      <footer>この資料は commit <code>faa35b7</code> 時点のコードから作成しました。行番号はコードの変更でずれることがあります。</footer>
+      <footer>この資料は commit <code>5fa6898</code> 時点のコードから作成しました。行番号はコードの変更でずれることがあります。</footer>
     </div>
   </main>
 </div>
