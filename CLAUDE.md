@@ -8,6 +8,7 @@ E2E テストを 4 つのスキルに分けて回すための試作リポジト�
 - `api/` FastAPI + SQLAlchemy 2.0（:8000）
 - `db/init/` PostgreSQL のスキーマと開発用の初期データ（ホストからは :55432）
 - `e2e/` Playwright。`specs/<area>/` 仕様、`data/` テストデータ、`tests/<area>/` テストコード、`pages/` Page Object、`support/` 共通のフィクスチャ（ログイン・計測）、`reports/` 結果
+- `.github/workflows/e2e.yml` PR の作成・更新で E2E を流す CI（seed → fixtures を作り直してから実行）
 - `scripts/db-query.sh` 読み取り専用で SQL を実行 / `scripts/db-exec.sh` 安全装置付きの書き込み
 
 ## コマンド
