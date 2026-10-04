@@ -1,0 +1,47 @@
+{
+    "data": {
+        "D1": {
+            "id": 5,
+            "name": "E2E-OC-カテゴリ",
+            "table": "categories"
+        },
+        "D2": {
+            "id": 16,
+            "sku": "E2E-OC-001",
+            "name": "E2E-OC-ノート",
+            "price": 500,
+            "stock": 10,
+            "table": "products"
+        },
+        "D3": {
+            "id": 17,
+            "sku": "E2E-OC-002",
+            "name": "E2E-OC-ペン",
+            "price": 200,
+            "stock": 2,
+            "table": "products"
+        },
+        "D4": {
+            "id": 18,
+            "sku": "E2E-OC-003",
+            "name": "E2E-OC-消しゴム",
+            "price": 100,
+            "stock": 0,
+            "table": "products"
+        },
+        "D5": {
+            "id": 19,
+            "sku": "E2E-OC-004",
+            "name": "E2E-OC-定規",
+            "price": 300,
+            "stock": 5,
+            "table": "products"
+        },
+        "D6": {
+            "table": "orders",
+            "customer_email": "e2e-oc@example.com"
+        }
+    },
+    "feature": "order-checkout",
+    "generatedAt": "2026-10-04T15:09:01+09:00"
+}

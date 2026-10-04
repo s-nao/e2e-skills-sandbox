@@ -1,0 +1,47 @@
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: app
+      POSTGRES_DB: shop
+    ports:
+      - "55432:5432"
+    volumes:
+      - ./db/init:/docker-entrypoint-initdb.d:ro
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U app -d shop"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  api:
+    build: ./api
+    environment:
+      DATABASE_URL: postgresql+psycopg://app:app@db:5432/shop
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./api/app:/srv/app
+    depends_on:
+      db:
+        condition: service_healthy
+
+  web:
+    image: node:20-alpine
+    working_dir: /srv/web
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
+    environment:
+      API_TARGET: http://api:8000
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./web:/srv/web
+      - web-node-modules:/srv/web/node_modules
+    depends_on:
+      - api
+
+volumes:
+  db-data:
+  web-node-modules:
