@@ -8,6 +8,26 @@ class Base(DeclarativeBase):
     pass
 
 
+class User(Base):
+    __tablename__ = "users"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    email: Mapped[str]
+    password_hash: Mapped[str]
+    name: Mapped[str]
+    is_active: Mapped[bool]
+
+
+class UserSession(Base):
+    __tablename__ = "sessions"
+
+    token_hash: Mapped[str] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
+    expires_at: Mapped[datetime]
+
+    user: Mapped[User] = relationship(lazy="joined")
+
+
 class Category(Base):
     __tablename__ = "categories"
 
@@ -35,7 +55,7 @@ class Order(Base):
     __tablename__ = "orders"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    customer_email: Mapped[str]
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     status: Mapped[str] = mapped_column(default="placed")
     total: Mapped[int]
     created_at: Mapped[datetime] = mapped_column(server_default=func.now())

@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict, EmailStr, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class CategoryOut(BaseModel):
@@ -39,7 +39,6 @@ class OrderItemIn(BaseModel):
 
 
 class OrderIn(BaseModel):
-    customer_email: EmailStr
     items: list[OrderItemIn] = Field(min_length=1)
 
 
@@ -54,8 +53,20 @@ class OrderItemOut(BaseModel):
 
 class OrderOut(BaseModel):
     id: int
-    customer_email: str
     status: str
     total: int
     created_at: datetime
     items: list[OrderItemOut]
+
+
+class LoginIn(BaseModel):
+    email: str = Field(min_length=1, max_length=254)
+    password: str = Field(min_length=1, max_length=128)
+
+
+class UserOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    email: str
+    name: str

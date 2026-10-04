@@ -4,6 +4,8 @@ from fastapi import Depends, FastAPI, HTTPException, Query
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
+from . import auth
+from .auth import CurrentUser
 from .db import get_session
 from .models import Category, Order, OrderItem, Product
 from .schemas import (
@@ -17,6 +19,7 @@ from .schemas import (
 )
 
 app = FastAPI(title="Sample Shop API")
+app.include_router(auth.router)
 
 SessionDep = Annotated[Session, Depends(get_session)]
 
@@ -78,7 +81,6 @@ def get_product(product_id: int, session: SessionDep):
 def to_order_out(order: Order) -> OrderOut:
     return OrderOut(
         id=order.id,
-        customer_email=order.customer_email,
         status=order.status,
         total=order.total,
         created_at=order.created_at,
@@ -95,7 +97,7 @@ def to_order_out(order: Order) -> OrderOut:
 
 
 @app.post("/api/orders", response_model=OrderOut, status_code=201)
-def create_order(payload: OrderIn, session: SessionDep):
+def create_order(payload: OrderIn, user: CurrentUser, session: SessionDep):
     product_ids = [item.product_id for item in payload.items]
     # 在庫を同時に減らされないよう、対象商品の行をロックしてから確認する
     products = {
@@ -105,7 +107,7 @@ def create_order(payload: OrderIn, session: SessionDep):
         )
     }
 
-    order = Order(customer_email=payload.customer_email, total=0)
+    order = Order(user_id=user.id, total=0)
     for line in payload.items:
         product = products.get(line.product_id)
         if product is None or not product.is_active:
@@ -127,10 +129,10 @@ def create_order(payload: OrderIn, session: SessionDep):
 
 
 @app.get("/api/orders", response_model=list[OrderOut])
-def list_orders(customer_email: str, session: SessionDep):
+def list_orders(user: CurrentUser, session: SessionDep):
     orders = session.scalars(
         select(Order)
-        .where(Order.customer_email == customer_email)
+        .where(Order.user_id == user.id)
         .order_by(Order.created_at.desc(), Order.id.desc())
     ).all()
     return [to_order_out(o) for o in orders]

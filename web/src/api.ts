@@ -20,9 +20,10 @@ export type ProductQuery = {
   page?: number
 }
 
+export type User = { id: number; email: string; name: string }
+
 export type Order = {
   id: number
-  customer_email: string
   status: string
   total: number
   created_at: string
@@ -63,10 +64,13 @@ export const api = {
   categories: () => request<Category[]>('/api/categories'),
   products: (query: ProductQuery) => request<ProductPage>(`/api/products?${toSearchParams(query)}`),
   product: (id: number) => request<Product>(`/api/products/${id}`),
-  createOrder: (customer_email: string, items: { product_id: number; quantity: number }[]) =>
-    request<Order>('/api/orders', { method: 'POST', body: JSON.stringify({ customer_email, items }) }),
-  orders: (customer_email: string) =>
-    request<Order[]>(`/api/orders?${toSearchParams({ customer_email })}`),
+  createOrder: (items: { product_id: number; quantity: number }[]) =>
+    request<Order>('/api/orders', { method: 'POST', body: JSON.stringify({ items }) }),
+  orders: () => request<Order[]>('/api/orders'),
+  login: (email: string, password: string) =>
+    request<User>('/api/auth/login', { method: 'POST', body: JSON.stringify({ email, password }) }),
+  logout: () => fetch('/api/auth/logout', { method: 'POST' }),
+  me: () => request<User>('/api/auth/me'),
 }
 
 export const yen = (n: number) => `¥${n.toLocaleString('ja-JP')}`

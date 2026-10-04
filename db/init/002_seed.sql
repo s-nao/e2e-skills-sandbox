@@ -15,3 +15,8 @@ INSERT INTO products (sku, name, description, category_id, price, stock) VALUES
 
 INSERT INTO products (sku, name, description, category_id, price, stock, is_active) VALUES
   ('OD-999', '旧型テント',          '販売終了品',               3, 9800,   5, FALSE);
+
+-- 開発用ユーザー（パスワードはどちらも password123）
+INSERT INTO users (email, password_hash, name, is_active) VALUES
+  ('customer@example.com', crypt('password123', gen_salt('bf')), '山田 花子', TRUE),
+  ('inactive@example.com', crypt('password123', gen_salt('bf')), '停止 済子', FALSE);

@@ -3,12 +3,13 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 import { api, ApiError, yen } from '../api'
+import { useAuth } from '../auth'
 import { useCart } from '../cart'
 
 const router = useRouter()
 const cart = useCart()
+const auth = useAuth()
 
-const email = ref('')
 const submitting = ref(false)
 const error = ref('')
 
@@ -16,13 +17,11 @@ async function placeOrder() {
   submitting.value = true
   error.value = ''
   try {
-    const order = await api.createOrder(
-      email.value,
-      cart.lines.map((l) => ({ product_id: l.product.id, quantity: l.quantity })),
-    )
+    const order = await api.createOrder(cart.lines.map((l) => ({ product_id: l.product.id, quantity: l.quantity })))
     cart.clear()
-    router.push(`/orders/complete/${order.id}?email=${encodeURIComponent(order.customer_email)}`)
+    router.push(`/orders/complete/${order.id}`)
   } catch (e) {
+    if (e instanceof ApiError && e.status === 401) auth.expire()
     error.value = e instanceof ApiError ? e.message : '注文に失敗しました'
   } finally {
     submitting.value = false
@@ -57,10 +56,12 @@ async function placeOrder() {
     </table>
     <p class="price">合計 <span data-testid="cart-total">{{ yen(cart.total.value) }}</span></p>
 
-    <form class="row" data-testid="order-form" @submit.prevent="placeOrder">
-      <input v-model="email" type="email" required placeholder="メールアドレス" data-testid="email-input" />
-      <button type="submit" :disabled="submitting" data-testid="place-order">注文する</button>
-    </form>
+    <div v-if="auth.state.user" class="row">
+      <button :disabled="submitting" data-testid="place-order" @click="placeOrder">注文する</button>
+    </div>
+    <p v-else class="row">
+      <RouterLink :to="{ path: '/login', query: { redirect: '/cart' } }" data-testid="login-to-order">ログインして注文する</RouterLink>
+    </p>
     <p v-if="error" class="error" role="alert" data-testid="order-error">{{ error }}</p>
   </template>
 </template>

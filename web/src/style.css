@@ -25,3 +25,7 @@ input, select, button { font: inherit; padding: 6px 10px; }
 .pager { display: flex; gap: 12px; align-items: center; justify-content: center; }
 .table { width: 100%; border-collapse: collapse; background: #fff; }
 .table th, .table td { border-bottom: 1px solid #ddd; padding: 8px; text-align: left; }
+.header nav { align-items: center; }
+.link-button { background: none; border: 0; padding: 0; color: #0b57d0; text-decoration: underline; cursor: pointer; }
+.login-form { display: grid; gap: 12px; max-width: 360px; }
+.login-form label { display: grid; gap: 4px; }
