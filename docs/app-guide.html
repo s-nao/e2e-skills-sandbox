@@ -270,6 +270,7 @@
         <li><a href="#api">API</a></li>
         <li><a href="#db">データモデル</a></li>
         <li><a href="#errors">エラーと表示</a></li>
+        <li><a href="#admin">店舗管理画面</a></li>
       </ol>
     </div>
     <div>
@@ -287,9 +288,9 @@
 
   <main>
     <header class="doc-head">
-      <span class="eyebrow">e2e-skills-sandbox · commit 73c34da · 2026-10-04</span>
+      <span class="eyebrow">e2e-skills-sandbox · commit faa35b7 · 2026-10-04</span>
       <h1>Sample Shop 仕様書</h1>
-      <p class="lede">商品の検索から注文までを扱うサンプルショップ（ログイン付き）の動作仕様と、コードを読むときの要点をまとめたものです。E2E テストのスキル（spec / data-check / data-seed / run）を試すための題材です。</p>
+      <p class="lede">商品の検索から注文までと、店舗管理者向けの管理画面を扱うサンプルショップ（ログイン付き）の動作仕様と、コードを読むときの要点をまとめたものです。E2E テストのスキル（spec / data-check / data-seed / run）を試すための題材です。</p>
     </header>
 
     <!-- ===================== 第 1 部 ===================== -->
@@ -298,18 +299,19 @@
 
       <section id="overview">
         <h2>全体構成</h2>
-        <p>3 つのコンテナを <code>docker compose up -d</code> で起動します。ブラウザは web にだけアクセスし、<code>/api</code> へのリクエストは Vite が api に転送します。</p>
+        <p>4 つのコンテナを <code>docker compose up -d</code> で起動します。お客さん向けの画面（web）と店舗管理の画面（admin）は別のアプリで、どちらも <code>/api</code> へのリクエストを Vite が api に転送します。</p>
         <div class="table-wrap">
           <table>
             <thead><tr><th>サービス</th><th>技術</th><th>ポート</th><th>役割</th></tr></thead>
             <tbody>
               <tr><td class="nowrap">web</td><td>Vue 3 + Vite + vue-router</td><td class="num">5173</td><td>画面。カートはブラウザの localStorage に保存</td></tr>
-              <tr><td class="nowrap">api</td><td>FastAPI + SQLAlchemy 2.0</td><td class="num">8000</td><td>商品・カテゴリ・注文・ログインの API。在庫の引き当て、セッションの管理</td></tr>
+              <tr><td class="nowrap">admin</td><td>Vue 3 + Vite + vue-router</td><td class="num">5174</td><td>店舗管理の画面（<a href="#admin">詳細</a>）。web とは別アプリで、独自のログイン画面を持つ</td></tr>
+              <tr><td class="nowrap">api</td><td>FastAPI + SQLAlchemy 2.0</td><td class="num">8000</td><td>商品・カテゴリ・注文・ログインの API と、店舗管理の API（<code>/api/admin</code>）。在庫の引き当て、セッションの管理</td></tr>
               <tr><td class="nowrap">db</td><td>PostgreSQL 16</td><td class="num">55432</td><td>初回起動時に <span class="path">db/init/*.sql</span> でスキーマと初期データ（開発用ユーザーを含む）を作成</td></tr>
             </tbody>
           </table>
         </div>
-        <p>商品の閲覧とカートはログインなしで使えます。<strong>注文と注文履歴はログインが必要</strong>で、注文はログイン中のユーザーに紐づきます。ユーザー登録の画面はなく、ユーザーは seed（SQL）で作ります。</p>
+        <p>商品の閲覧とカートはログインなしで使えます。<strong>注文と注文履歴はログインが必要</strong>で、注文はログイン中のユーザーに紐づきます。ユーザー登録の画面はなく、ユーザーは seed（SQL）で作ります。店舗の管理者は <code>users.is_admin = true</code> のユーザーで、別アプリの<a href="#admin">店舗管理画面</a>（:5174）を使えます。</p>
       </section>
 
       <section id="screens">
@@ -362,7 +364,7 @@ flowchart LR
             </tbody>
           </table>
         </div>
-        <p class="caption">🔒 はログインが必要な画面。未ログインで開くと <code>/login?redirect=元のパス</code> に移る（<span class="path">web/src/main.ts:26</span>）。ヘッダーには、ログイン中なら「{名前} さん」と「ログアウト」、未ログインなら「ログイン」を表示する。</p>
+        <p class="caption">🔒 はログインが必要な画面。未ログインで開くと <code>/login?redirect=元のパス</code> に移る（<span class="path">web/src/main.ts:29</span>）。ヘッダーには、ログイン中なら「{名前} さん」と「ログアウト」、未ログインなら「ログイン」を表示する。店舗管理画面は別アプリなので、このヘッダーに管理用のリンクは無い（<a href="#admin">店舗管理画面</a>を参照）。</p>
       </section>
 
       <section id="rules">
@@ -421,6 +423,7 @@ flowchart LR
             <tbody>
               <tr><td><code>customer@example.com</code></td><td><code>password123</code></td><td>山田 花子</td><td><span class="pill ok">ログイン可</span></td></tr>
               <tr><td><code>inactive@example.com</code></td><td><code>password123</code></td><td>停止 済子</td><td><span class="pill neutral">停止中</span></td></tr>
+              <tr><td><code>admin@example.com</code></td><td><code>admin123</code></td><td>店舗 管理者</td><td><span class="pill ok">ログイン可</span> 管理者（<code>is_admin</code>）</td></tr>
             </tbody>
           </table>
         </div>
@@ -447,13 +450,21 @@ flowchart LR
                 <td>201 で注文。401 / 400 / 409 / 422 は <a href="#errors">エラー</a>を参照</td>
               </tr>
               <tr><td class="method">GET</td><td class="nowrap"><code>/api/orders</code> 🔒</td><td>—</td><td>ログイン中のユーザーの注文を新しい順に</td></tr>
-              <tr><td class="method">POST</td><td class="nowrap"><code>/api/auth/login</code></td><td><code>{email, password}</code></td><td>200 でユーザー <code>{id, email, name}</code> と <code>Set-Cookie: session</code>。失敗は 401</td></tr>
+              <tr><td class="method">POST</td><td class="nowrap"><code>/api/auth/login</code></td><td><code>{email, password}</code></td><td>200 でユーザー <code>{id, email, name, is_admin}</code> と <code>Set-Cookie: session</code>。失敗は 401</td></tr>
               <tr><td class="method">POST</td><td class="nowrap"><code>/api/auth/logout</code></td><td>—</td><td>204。セッションを削除し、Cookie を消す</td></tr>
               <tr><td class="method">GET</td><td class="nowrap"><code>/api/auth/me</code></td><td>—</td><td>ログイン中のユーザー。未ログイン・期限切れ・停止中は 401</td></tr>
+              <tr><td class="method">GET</td><td class="nowrap"><code>/api/admin/products</code> 👑</td><td><code>q</code>（商品名または SKU）/ <code>page</code> / <code>page_size</code></td><td>販売停止も含む一覧 <code>{items, total, page, page_size}</code>。新しい順</td></tr>
+              <tr><td class="method">GET</td><td class="nowrap"><code>/api/admin/products/{id}</code> 👑</td><td>—</td><td>商品 1 件（販売停止も可）。無ければ 404</td></tr>
+              <tr><td class="method">POST</td><td class="nowrap"><code>/api/admin/products</code> 👑</td><td><code>{sku, name, description, category_id, price, stock, is_active}</code></td><td>201。SKU の重複は 409、カテゴリが無ければ 400</td></tr>
+              <tr><td class="method">PUT</td><td class="nowrap"><code>/api/admin/products/{id}</code> 👑</td><td>POST と同じ</td><td>200。SKU は他の商品と重複できない（409）</td></tr>
+              <tr><td class="method">DELETE</td><td class="nowrap"><code>/api/admin/products/{id}</code> 👑</td><td>—</td><td>204。注文履歴のある商品は 409</td></tr>
+              <tr><td class="method">POST</td><td class="nowrap"><code>/api/admin/products/import</code> 👑</td><td><code>{csv, dry_run}</code></td><td><code>{dry_run, created, updated, deleted, errors: [{line, sku, message}]}</code>。エラーがあれば何も反映しない</td></tr>
+              <tr><td class="method">GET</td><td class="nowrap"><code>/api/admin/sales</code> 👑</td><td><code>from</code> / <code>to</code>（日本時間の日付、両端を含む）</td><td><code>{count, total, orders, truncated}</code>。件数と合計は <code>placed</code> のみ</td></tr>
+              <tr><td class="method">DELETE</td><td class="nowrap"><code>/api/admin/sales/{id}</code> 👑</td><td>—</td><td>204。無ければ 404</td></tr>
             </tbody>
           </table>
         </div>
-        <p class="caption">🔒 はログインが必要（Cookie が無い・無効なら 401「ログインしてください」）。起動中は http://localhost:8000/docs で Swagger UI を見られます（FastAPI が自動生成）。</p>
+        <p class="caption">🔒 はログインが必要（Cookie が無い・無効なら 401「ログインしてください」）。👑 は管理者だけ（未ログインは 401、一般ユーザーは 403「管理者のみ利用できます」）。起動中は http://localhost:8000/docs で Swagger UI を見られます（FastAPI が自動生成）。</p>
       </section>
 
       <section id="db">
@@ -472,6 +483,7 @@ erDiagram
     text password_hash "bcrypt cost 12"
     text name
     bool is_active "false でログイン不可"
+    bool is_admin "true で店舗管理者"
   }
   sessions {
     text token_hash PK "SHA-256"
@@ -505,10 +517,10 @@ erDiagram
           </pre>
         </div>
         <ul class="plain">
-          <li>スキーマは <span class="path">db/init/001_schema.sql</span>、開発用の初期データ（11 商品、うち 1 件は販売停止。ユーザー 2 人）は <span class="path">002_seed.sql</span></li>
+          <li>スキーマは <span class="path">db/init/001_schema.sql</span>、開発用の初期データ（11 商品、うち 1 件は販売停止。ユーザー 3 人、うち 1 人は管理者）は <span class="path">002_seed.sql</span></li>
           <li>パスワードのハッシュを SQL で作れるよう、拡張機能 <code>pgcrypto</code> を有効にしている</li>
           <li>ユーザーを削除すると、そのセッションも消える（<code>ON DELETE CASCADE</code>）。注文は消えないので、注文のあるユーザーは削除できない</li>
-          <li>マイグレーションの仕組みはなく、スキーマを変えたら <code>docker compose down -v</code> で作り直す</li>
+          <li>マイグレーションの仕組みはなく、スキーマを変えたら <code>docker compose down -v</code> で作り直す。すでに起動中の DB に管理者の機能を入れるときは、<code>ALTER TABLE users ADD COLUMN is_admin BOOLEAN NOT NULL DEFAULT FALSE</code> と管理者の INSERT も必要</li>
           <li><code>status = 'cancelled'</code> は定義だけで、キャンセルの機能はまだない</li>
         </ul>
       </section>
@@ -523,6 +535,9 @@ erDiagram
               <tr><td>未ログイン・セッション切れで注文</td><td><span class="pill warn">401</span></td><td>「ログインしてください」。ヘッダーがログアウトの状態に変わる</td></tr>
               <tr><td>在庫不足</td><td><span class="pill warn">409</span></td><td>「「{商品名}」の在庫が不足しています（残り n 点）」</td></tr>
               <tr><td>販売停止・存在しない商品を注文</td><td><span class="pill warn">400</span></td><td>「商品 {id} は購入できません」</td></tr>
+              <tr><td>一般ユーザーが管理 API を呼ぶ</td><td><span class="pill warn">403</span></td><td>管理画面は <code>/forbidden</code> に移り「このページは店舗管理者だけが利用できます」</td></tr>
+              <tr><td>SKU の重複（管理画面での登録・編集）</td><td><span class="pill warn">409</span></td><td>フォームに「SKU「{sku}」はすでに使われています」</td></tr>
+              <tr><td>注文履歴のある商品の削除</td><td><span class="pill warn">409</span></td><td>一覧の上に「注文履歴のある商品は削除できません。販売停止にしてください」</td></tr>
               <tr><td>入力の形式エラー（数量が範囲外など）</td><td><span class="pill warn">422</span></td><td>「入力内容を確認してください」（どの項目かは出ない）</td></tr>
               <tr><td>販売停止・存在しない商品の詳細</td><td><span class="pill neutral">404</span></td><td>「商品が見つかりません」</td></tr>
               <tr><td>一覧の取得に失敗</td><td><span class="pill danger">5xx など</span></td><td>「商品の取得に失敗しました」</td></tr>
@@ -530,6 +545,42 @@ erDiagram
           </table>
         </div>
         <p class="caption">API のエラーの <code>detail</code> が文字列ならそのまま表示し、そうでなければ（422 の配列など）定型文にする。<span class="path">web/src/api.ts:42</span></p>
+      </section>
+
+      <section id="admin">
+        <h2>店舗管理画面</h2>
+        <p>管理者（<code>users.is_admin = true</code>）だけが使える画面で、お客さん向けの web とは<strong>別の Vue アプリ</strong>（<span class="path">admin/</span>、http://localhost:5174/）です。API は web と共通で、Vite のプロキシで <code>/api</code> を api に転送します。未ログインなら <code>/login</code> へ、一般ユーザーなら <code>/forbidden</code> に移ります。Cookie はポートで分かれないため、5173 でログインしていれば 5174 でも同じセッションでログイン済みになります（逆も同じ）。API も同じ条件で守られ、画面を通さなくても 401 / 403 になります。管理者のアカウントは今は SQL の seed で固定です（<code>admin@example.com</code>）。</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>画面</th><th>パス</th><th>主な動作</th></tr></thead>
+            <tbody>
+              <tr><td class="nowrap">商品一覧</td><td class="nowrap"><code>/products</code></td><td>販売停止も含めて新しい順に表示。商品名または SKU で検索。編集・削除。削除の前に確認ダイアログ</td></tr>
+              <tr><td class="nowrap">商品の登録・編集</td><td class="nowrap"><code>/products/new</code>、<code>/products/:id</code></td><td>SKU（英数字・<code>-</code>・<code>_</code>、40 文字まで）、商品名、説明、カテゴリ、価格、在庫、販売中。保存すると一覧へ戻る</td></tr>
+              <tr><td class="nowrap">CSV 一括登録</td><td class="nowrap"><code>/products/import</code></td><td>ファイルを選ぶと、まず確認だけ行い、登録・変更・削除の件数とエラーを表示。「この内容で反映する」で書き込む</td></tr>
+              <tr><td class="nowrap">売り上げ</td><td class="nowrap"><code>/sales</code></td><td>日付の範囲（日本時間）で絞り、件数と合計、注文の明細（購入者・商品・数量）を表示。注文ごとに削除できる</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <h3>商品の削除と販売停止</h3>
+        <ul class="plain">
+          <li>注文履歴の無い商品は、実際に DB から削除する</li>
+          <li><strong>注文履歴のある商品は削除できない</strong>（409）。過去の注文の表示と売り上げが壊れるため。代わりに「販売中」を外して<strong>販売停止</strong>にする（お客さん向けの一覧と詳細から消える）</li>
+        </ul>
+        <h3>CSV の書式</h3>
+        <ul class="plain">
+          <li>UTF-8。1 行目はヘッダーで、必須の列は <code>sku, name, category, price, stock</code>。任意の列は <code>description, is_active, action</code></li>
+          <li><code>sku</code> が無ければ登録、あれば変更。<code>category</code> はカテゴリの名前</li>
+          <li>任意の列を書かなければ、既存の商品ではその値は変わらない（<code>description</code> と <code>is_active</code>）。登録のときの既定は、説明が空、販売中</li>
+          <li><strong><code>action</code> 列に <code>delete</code> と書いた行はその商品を削除する</strong>。注文履歴のある商品は、普通の削除と同じくエラー</li>
+          <li><strong>エラーが 1 行でもあれば、正しい行も含めて何も反映しない</strong>。エラーは「N 行目（sku）: 理由」で表示し、反映ボタンは押せない。1 度に 1,000 行まで</li>
+        </ul>
+        <h3>売り上げ</h3>
+        <ul class="plain">
+          <li>範囲の日付は日本時間で、両端を含む。注文の日時が UTC で前日・翌日にずれる夜間の注文も、日本時間の日付で数える</li>
+          <li>件数と合計は<strong>注文済み（<code>placed</code>）だけ</strong>。キャンセル済みは明細には出るが、合計には入らない</li>
+          <li>明細は新しい順に 200 件まで。それを超えると「truncated」の表示が出る（件数と合計は全件分）</li>
+          <li>注文の削除は記録の訂正で、<strong>在庫は戻さない</strong>。明細も一緒に消える。削除の前に確認ダイアログ</li>
+        </ul>
       </section>
     </div>
 
@@ -539,13 +590,14 @@ erDiagram
 
       <section id="order">
         <h2>読む順番</h2>
-        <p>データの形 → それを扱う API → 画面、の順に読むと迷いません。全部で 1,000 行ほどです。</p>
+        <p>データの形 → それを扱う API → 画面、の順に読むと迷いません。全部で 2,000 行ほどです。</p>
         <ol class="steps">
           <li><div class="what"><span class="path">db/init/001_schema.sql</span><span class="why">テーブルは 6 つ（ユーザー・セッション・カテゴリ・商品・注文・明細）。CHECK 制約（在庫 0 以上など）が DB 側の最後の防衛線になっている</span></div></li>
           <li><div class="what"><span class="path">api/app/models.py</span> → <span class="path">schemas.py</span><span class="why">models は DB の行、schemas は API の入出力。入力のバリデーション（数量 1〜99 など）は schemas にある</span></div></li>
-          <li><div class="what"><span class="path">api/app/auth.py</span> → <span class="path">main.py</span><span class="why">auth.py はログインと、ログイン必須の API に付ける依存関係 <code>CurrentUser</code>。main.py は残りの API で、一覧の検索条件の組み立て（54 行目〜）と、注文の在庫引き当て（99 行目〜）が中心</span></div></li>
+          <li><div class="what"><span class="path">api/app/auth.py</span> → <span class="path">main.py</span><span class="why">auth.py はログインと、ログイン必須の API に付ける依存関係 <code>CurrentUser</code>。main.py は残りの API で、一覧の検索条件の組み立て（55 行目〜）と、注文の在庫引き当て（101 行目〜）が中心。管理者向けの API は <span class="path">admin.py</span> にまとめてある</span></div></li>
           <li><div class="what"><span class="path">web/src/api.ts</span> → <span class="path">auth.ts</span> → <span class="path">cart.ts</span> → <span class="path">main.ts</span><span class="why">画面から API を呼ぶ窓口、ログイン状態、カートの状態。main.ts はルーティングと、ログインが必要な画面のガード</span></div></li>
           <li><div class="what"><span class="path">web/src/pages/ProductListPage.vue</span> → <span class="path">CartPage.vue</span><span class="why">URL を状態として扱う一覧と、注文を送るカート。ほかの画面はこの 2 つの縮小版</span></div></li>
+          <li><div class="what"><span class="path">admin/src/</span><span class="why">店舗管理の別アプリ。構成は web と同じ（main.ts・App.vue・pages/）。管理画面を触るときだけ読めばよい</span></div></li>
           <li><div class="what"><span class="path">e2e/</span> と <span class="path">.claude/skills/</span><span class="why">アプリが分かってから。spec → data → tests → reports の順にファイルを追う。テストの共通部品は <span class="path">e2e/support/</span>、画面の操作は <span class="path">e2e/pages/</span></span></div></li>
         </ol>
       </section>
@@ -604,7 +656,7 @@ sequenceDiagram
         <h2>ファイル別の要点</h2>
         <div class="points">
           <div class="point">
-            <div class="point-head"><strong>注文の在庫引き当て</strong><span class="path">api/app/main.py:99</span></div>
+            <div class="point-head"><strong>注文の在庫引き当て</strong><span class="path">api/app/main.py:101</span></div>
             <ul>
               <li><code>with_for_update(of=Product)</code> の <code>of=</code> は必須。商品とカテゴリは外部結合で読み込む設定のため、これが無いと PostgreSQL が「外部結合の NULL になりうる側はロックできない」とエラーにする</li>
               <li>同じ商品が明細に 2 回出ても、同じ <code>product</code> オブジェクトから在庫を引くので、合計で判定される</li>
@@ -613,10 +665,10 @@ sequenceDiagram
             </ul>
           </div>
           <div class="point">
-            <div class="point-head"><strong>商品一覧の検索</strong><span class="path">api/app/main.py:44</span></div>
+            <div class="point-head"><strong>商品一覧の検索</strong><span class="path">api/app/main.py:46</span></div>
             <ul>
               <li>条件をリストに積んで <code>where(*conditions)</code> に渡す。件数と一覧で同じ条件を使い回す</li>
-              <li>並び順は <code>SORT_COLUMNS</code>（26 行目）の辞書。同じ値のときの順序がぶれないよう、必ず <code>id</code> を第 2 キーにしている（ページ送りで重複・抜けが出ないため）</li>
+              <li>並び順は <code>SORT_COLUMNS</code>（27 行目）の辞書。同じ値のときの順序がぶれないよう、必ず <code>id</code> を第 2 キーにしている（ページ送りで重複・抜けが出ないため）</li>
               <li><code>ILIKE '%…%'</code> は通常のインデックスが効かない。大量データでの性能測定の対象</li>
             </ul>
           </div>
@@ -633,7 +685,7 @@ sequenceDiagram
             <ul>
               <li>ログイン状態はモジュールの最上位の <code>reactive</code> に持つ。カートと同じく全画面で共有する</li>
               <li><code>ensureLoaded()</code> は <code>/api/auth/me</code> を最初の 1 回だけ呼ぶ。ルーターのガードから毎回呼んでも、2 回目以降は待たない</li>
-              <li>ルートの <code>meta.requiresAuth</code> でログインが必要な画面、<code>meta.guestOnly</code> で未ログイン専用の画面（ログイン画面）を表す</li>
+              <li>ルートの <code>meta.requiresAuth</code> でログインが必要な画面、<code>meta.guestOnly</code> で未ログイン専用の画面（ログイン画面）を表す。管理画面（<span class="path">admin/src/main.ts</span>）は同じ作りのガードに、管理者だけの画面を表す <code>meta.requiresAdmin</code>（一般ユーザーは <code>/forbidden</code> へ）が加わる。<span class="path">auth.ts</span>・<span class="path">api.ts</span> は web からコピーしたもので、共有モジュールにはしていない</li>
               <li>戻り先は必ず <code>safeRedirect()</code> を通す。E2E の login S8 が、このガードを外すと失敗することを確認済み</li>
             </ul>
           </div>
@@ -661,7 +713,17 @@ sequenceDiagram
             </ul>
           </div>
           <div class="point">
-            <div class="point-head"><strong>テスト用の目印</strong><span class="path">web/src/pages/*.vue</span></div>
+            <div class="point-head"><strong>店舗管理の API</strong><span class="path">api/app/admin.py</span></div>
+            <ul>
+              <li><code>APIRouter(dependencies=[Depends(require_admin)])</code> で、ルーター全体を管理者だけにする。<code>require_admin</code> は <code>CurrentUser</code>（未ログインは 401）に <code>is_admin</code> の確認（403）を足したもの</li>
+              <li>商品の削除は、注文明細に載っているかを先に調べて 409 にする。外部キーのエラーに頼らない</li>
+              <li>CSV の取り込みは、全行を検証して「登録・変更・削除の予定」に分け、エラーが無く <code>dry_run</code> でもないときだけ、最後にまとめて書き込む（全件反映か全件不反映）</li>
+              <li>売り上げの日付は <code>timezone('Asia/Tokyo', created_at)</code> を日付にして比較する。件数と合計の集計と、明細の取得は別のクエリ</li>
+              <li>注文の削除は <code>delete(Order)</code> の 1 文。明細は <code>ON DELETE CASCADE</code> で消える</li>
+            </ul>
+          </div>
+          <div class="point">
+            <div class="point-head"><strong>テスト用の目印</strong><span class="path">web/src/pages/*.vue、admin/src/pages/*.vue</span></div>
             <ul>
               <li>操作・確認の対象には <code>data-testid</code> を付ける。商品カードとカートの行には <code>data-sku</code> もある</li>
               <li>文言や CSS クラスを変えても E2E が壊れないように、テストは <code>data-testid</code> だけを使う。<strong>画面を直すときは、この属性を消さない</strong></li>
@@ -681,15 +743,16 @@ sequenceDiagram
               <tr><td class="nowrap"><span class="path">scripts/db-exec.sh:20</span></td><td>書き込み</td><td>3 つの安全装置：本番らしい名前、ホストの許可リスト、1 行目の <code>-- e2e-data:</code></td></tr>
               <tr><td class="nowrap"><span class="path">e2e/support/fixtures.ts</span></td><td>全テスト共通</td><td><code>test.use({ loginAs: D6 })</code> でログイン済みから開始（API でログインし、ワーカーごとに 1 ユーザー 1 回だけ）。API の応答時間・ページの読み込み時間・console.error・想定外の 401 を自動で記録してテスト結果に添付する</td></tr>
               <tr><td class="nowrap"><span class="path">e2e/support/db.ts</span></td><td>DB の確認</td><td>テストの中から <code>db-query.sh</code> を呼ぶ。期待結果の「DB」の確認に使う</td></tr>
-              <tr><td class="nowrap"><span class="path">e2e/pages/*.ts</span></td><td>Page Object</td><td>画面ごとの要素と操作。操作の前に <code>toBeVisible()</code> で確かめ、要素が無いときに 30 秒待たずに「何が無いか」で失敗させる</td></tr>
-              <tr><td class="nowrap"><span class="path">e2e/tests/&lt;area&gt;/</span></td><td>テスト</td><td><code>catalog/product-list</code>（5 件）、<code>catalog/product-detail</code>（5 件）、<code>checkout/order-checkout</code>（3 件）、<code>account/login</code>（9 件）。ファイル同士は並列、ファイルの中は順番に流れる。商品一覧・詳細・注文はログインなし／ありの表示の違い（ヘッダー、カートの <code>place-order</code> ↔ <code>login-to-order</code>）をそれぞれ確かめる</td></tr>
+              <tr><td class="nowrap"><span class="path">e2e/playwright.config.ts</span></td><td>プロジェクト</td><td><code>chromium</code>（お客さん画面 :5173、<code>tests/admin/</code> は除く）と <code>admin</code>（<code>tests/admin/</code> だけ、:5174）。<code>--project=admin</code> で管理画面だけ流せる</td></tr>
+              <tr><td class="nowrap"><span class="path">e2e/pages/*.ts</span></td><td>Page Object</td><td>画面ごとの要素と操作（管理画面は <code>AdminProductsPage.ts</code>・<code>AdminImportPage.ts</code>・<code>AdminSalesPage.ts</code>）。操作の前に <code>toBeVisible()</code> で確かめ、要素が無いときに 30 秒待たずに「何が無いか」で失敗させる</td></tr>
+              <tr><td class="nowrap"><span class="path">e2e/tests/&lt;area&gt;/</span></td><td>テスト</td><td><code>catalog/product-list</code>（5 件）、<code>catalog/product-detail</code>（5 件）、<code>checkout/order-checkout</code>（3 件）、<code>account/login</code>（9 件）、<code>admin/admin-products</code>（10 件）、<code>admin/admin-csv</code>（9 件）、<code>admin/admin-sales</code>（7 件）。ファイル同士は並列、ファイルの中は順番に流れる。商品一覧・詳細・注文はログインなし／ありの表示の違い（ヘッダー、カートの <code>place-order</code> ↔ <code>login-to-order</code>）をそれぞれ確かめる。管理画面のテストは Playwright の別プロジェクト <code>admin</code>（baseURL は :5174、<code>E2E_ADMIN_BASE_URL</code> で変更可）で流れ、管理者・一般ユーザー・未ログインの 3 通りの権限と、削除や取り込み後の DB の状態を確かめる。確認ダイアログ（<code>window.confirm</code>）は <code>page.once('dialog', …)</code> で受ける</td></tr>
               <tr><td class="nowrap"><span class="path">e2e/data/*.fixtures.json</span></td><td>テストデータの値</td><td>seed のたびに id が変わるので手で書かない。<code>*.fixtures.sql</code> の出力を保存する</td></tr>
               <tr><td class="nowrap"><span class="path">.claude/skills/e2e-run/scripts/summarize.mjs</span></td><td>レポート</td><td>Playwright の <code>results.json</code> から添付を取り出し、シナリオ別・API 別に集計する</td></tr>
-              <tr><td class="nowrap"><span class="path">.github/workflows/e2e.yml</span></td><td>CI（GitHub Actions）</td><td>プルリクエストの作成・更新で動く。<code>docker compose up -d</code> → web と api の起動待ち → <code>db-exec.sh</code> で <code>*.seed.sql</code> を流す → <code>*.fixtures.sql</code> から <code>fixtures.json</code> を作り直す（id が毎回変わるため）→ <code>npx playwright test</code>。結果は <code>summarize.mjs</code> で Job Summary（実行画面の上部）に出す。同じ PR の古い実行は <code>concurrency</code> で取り消す。レポートと trace は artifact に 7 日間保存する。npm と Playwright のブラウザはキャッシュする</td></tr>
+              <tr><td class="nowrap"><span class="path">.github/workflows/e2e.yml</span></td><td>CI（GitHub Actions）</td><td>プルリクエストの作成・更新で動く。<code>docker compose up -d</code> → web・admin・api の起動待ち → <code>db-exec.sh</code> で <code>*.seed.sql</code> を流す → <code>*.fixtures.sql</code> から <code>fixtures.json</code> を作り直す（id が毎回変わるため）→ <code>npx playwright test</code>（<code>chromium</code> と <code>admin</code> の 2 プロジェクト）。結果は <code>summarize.mjs</code> で Job Summary（実行画面の上部）に出す。同じ PR の古い実行は <code>concurrency</code> で取り消す。レポートと trace は artifact に 7 日間保存する。npm と Playwright のブラウザはキャッシュする</td></tr>
             </tbody>
           </table>
         </div>
-        <p>テストデータは機能ごとのプレフィックス（例：<code>E2E-PL-</code> 一覧、<code>E2E-PD-</code> 詳細、<code>E2E-OC-</code> 注文）で始め、作成も削除もプレフィックスで行います。テストユーザーも機能ごとに作り、開発用の初期データ（<code>customer@example.com</code> など）には依存しません。ログアウトのテストは、使い回しているログイン状態を壊さないよう専用のユーザーを使います。</p>
+        <p>テストデータは機能ごとのプレフィックス（例：<code>E2E-PL-</code> 一覧、<code>E2E-PD-</code> 詳細、<code>E2E-OC-</code> 注文、<code>E2E-AP-</code> 管理の商品、<code>E2E-AC-</code> CSV、<code>E2E-AS-</code> 売り上げ）で始め、作成も削除もプレフィックスで行います。テストユーザーも機能ごとに作り、開発用の初期データ（<code>customer@example.com</code> など）には依存しません。ログアウトのテストは、使い回しているログイン状態を壊さないよう専用のユーザーを使います。</p>
       </section>
 
       <section id="caveats">
@@ -702,8 +765,12 @@ sequenceDiagram
               <tr><td>ログインの試行回数に制限がない</td><td><span class="pill danger">本番なら要対応</span> パスワードを何度でも試せる。回数制限やロックが必要</td><td class="nowrap"><span class="path">auth.py:56</span></td></tr>
               <tr><td>Cookie に <code>secure</code> が付いていない</td><td><span class="pill danger">本番なら要対応</span> ローカルの http 用の設定。https で公開するときは <code>True</code> に</td><td class="nowrap"><span class="path">auth.py:81</span></td></tr>
               <tr><td>ログアウトしてもカートの中身が残る</td><td><span class="pill warn">要仕様決定</span> 共有の端末では、次の人に前の人のカートが見える</td><td class="nowrap"><span class="path">cart.ts</span></td></tr>
-              <tr><td>422 のとき、どの項目が悪いのかが画面に出ない</td><td><span class="pill warn">UX</span> 今の画面からは起きにくい（数量を直接 API に送った場合など）</td><td class="nowrap"><span class="path">api.ts:42</span></td></tr>
-              <tr><td>商品名の検索が <code>ILIKE '%…%'</code></td><td><span class="pill neutral">性能</span> データが増えると全件を走査する。pg_trgm のインデックスなどで対策できる</td><td class="nowrap"><span class="path">main.py:56</span></td></tr>
+              <tr><td>422 のとき、どの項目が悪いのかが画面に出ない</td><td><span class="pill warn">UX</span> 今の画面からは起きにくい（数量を直接 API に送った場合など）</td><td class="nowrap"><span class="path">api.ts:70</span></td></tr>
+              <tr><td>商品名の検索が <code>ILIKE '%…%'</code></td><td><span class="pill neutral">性能</span> データが増えると全件を走査する。pg_trgm のインデックスなどで対策できる</td><td class="nowrap"><span class="path">main.py:57</span></td></tr>
+              <tr><td>管理者のアカウントが SQL の seed で固定（<code>admin123</code>）</td><td><span class="pill danger">本番なら要対応</span> 開発用の値。管理者の登録方法とパスワードの変更の仕組みが必要</td><td class="nowrap"><span class="path">002_seed.sql</span></td></tr>
+              <tr><td>売り上げの注文を削除しても在庫は戻らない</td><td><span class="pill warn">要仕様決定</span> 記録の訂正としては正しいが、返品の取り消しには使えない。キャンセルの機能と合わせて検討</td><td class="nowrap"><span class="path">admin.py</span></td></tr>
+              <tr><td>管理画面（:5174）と web（:5173）でログインの Cookie が共有される</td><td><span class="pill neutral">要注意</span> Cookie はポートで分かれないため、お客さんとして入った端末の同じブラウザで管理者が入ると、別のセッションに置き換わる。本番でドメインを分ければ解消する</td><td class="nowrap"><span class="path">auth.py</span></td></tr>
+              <tr><td>管理画面の操作に記録（監査ログ）が無い</td><td><span class="pill warn">要仕様決定</span> 誰がいつ商品や注文を消したか分からない</td><td class="nowrap"><span class="path">admin.py</span></td></tr>
               <tr><td>カート内の在庫数は更新されない</td><td><span class="pill neutral">UX</span> 在庫切れは注文した時点で初めて分かる（409）</td><td class="nowrap"><span class="path">cart.ts</span></td></tr>
             </tbody>
           </table>
@@ -711,7 +778,7 @@ sequenceDiagram
         <p class="note">「価格のずれ」「ログインの試行回数」「ログアウト後のカート」は、各 spec の「未確定の点」にも記録しています（<span class="path">e2e/specs/checkout/order-checkout.md</span>、<span class="path">e2e/specs/account/login.md</span>）。以前あった「注文履歴が誰でも見られる」問題は、ログインの導入で解消しました。</p>
       </section>
 
-      <footer>この資料は commit <code>73c34da</code> 時点のコードから作成しました。行番号はコードの変更でずれることがあります。</footer>
+      <footer>この資料は commit <code>faa35b7</code> 時点のコードから作成しました。行番号はコードの変更でずれることがあります。</footer>
     </div>
   </main>
 </div>

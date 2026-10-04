@@ -1,0 +1,88 @@
+{
+    "data": {
+        "D1": {
+            "id": 39,
+            "name": "E2E-AC-カテゴリ",
+            "table": "categories"
+        },
+        "D2": {
+            "id": 60,
+            "name": "E2E-AC-管理者",
+            "email": "e2e-ac-admin@example.com",
+            "table": "users",
+            "is_admin": true,
+            "password": "E2E-ac-pass1"
+        },
+        "D3": {
+            "id": 124,
+            "sku": "E2E-AC-001",
+            "name": "E2E-AC-既存A",
+            "price": 100,
+            "stock": 10,
+            "table": "products",
+            "is_active": false,
+            "description": "E2E-AC-説明A"
+        },
+        "D4": {
+            "id": 125,
+            "sku": "E2E-AC-002",
+            "name": "E2E-AC-削除対象",
+            "price": 100,
+            "stock": 1,
+            "table": "products",
+            "is_active": true,
+            "description": "E2E テスト用"
+        },
+        "D5": {
+            "id": 126,
+            "sku": "E2E-AC-003",
+            "name": "E2E-AC-注文済み",
+            "price": 500,
+            "stock": 5,
+            "table": "products",
+            "is_active": true,
+            "description": "E2E テスト用"
+        },
+        "D6": {
+            "id": 127,
+            "sku": "E2E-AC-004",
+            "name": "E2E-AC-据え置き",
+            "price": 200,
+            "stock": 20,
+            "table": "products",
+            "is_active": true,
+            "description": "E2E テスト用"
+        },
+        "D7": {
+            "id": 61,
+            "name": "E2E-AC-ユーザー",
+            "email": "e2e-ac@example.com",
+            "table": "users",
+            "is_admin": false,
+            "password": "E2E-ac-pass1"
+        },
+        "D8": {
+            "id": 57,
+            "table": "orders",
+            "total": 500,
+            "status": "placed",
+            "user_id": 61
+        },
+        "D9": {
+            "sku": "E2E-AC-NEW-1",
+            "skus": [
+                "E2E-AC-NEW-1",
+                "E2E-AC-NEW-2",
+                "E2E-AC-NEW-9",
+                "E2E-AC-NEW-C",
+                "E2E-AC-NEW-D",
+                "E2E-AC-BAD"
+            ],
+            "table": "products",
+            "exists": false,
+            "must_not_exist": true
+        }
+    },
+    "feature": "admin-csv",
+    "generatedAt": "2026-10-04T22:11:41+09:00"
+}

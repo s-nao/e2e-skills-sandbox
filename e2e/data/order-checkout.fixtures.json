@@ -1,12 +1,12 @@
 {
     "data": {
         "D1": {
-            "id": 8,
+            "id": 42,
             "name": "E2E-OC-カテゴリ",
             "table": "categories"
         },
         "D2": {
-            "id": 25,
+            "id": 134,
             "sku": "E2E-OC-001",
             "name": "E2E-OC-ノート",
             "price": 500,
@@ -14,7 +14,7 @@
             "table": "products"
         },
         "D3": {
-            "id": 26,
+            "id": 135,
             "sku": "E2E-OC-002",
             "name": "E2E-OC-ペン",
             "price": 200,
@@ -22,7 +22,7 @@
             "table": "products"
         },
         "D6": {
-            "id": 10,
+            "id": 69,
             "name": "E2E-OC-ユーザー",
             "email": "e2e-oc@example.com",
             "table": "users",
@@ -30,5 +30,5 @@
         }
     },
     "feature": "order-checkout",
-    "generatedAt": "2026-10-04T18:30:59+09:00"
+    "generatedAt": "2026-10-04T22:11:42+09:00"
 }

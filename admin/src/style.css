@@ -1,0 +1,41 @@
+:root {
+  font-family: system-ui, -apple-system, 'Hiragino Sans', sans-serif;
+  color: #1f2328;
+  background: #f6f7f9;
+}
+body { margin: 0; }
+a { color: #0b57d0; }
+.header { display: flex; justify-content: space-between; align-items: center; padding: 12px 24px; background: #fff; border-bottom: 1px solid #ddd; }
+.header nav { display: flex; gap: 16px; }
+.logo { font-weight: 700; text-decoration: none; color: inherit; }
+.badge { display: inline-block; min-width: 1.4em; padding: 0 6px; border-radius: 999px; background: #0b57d0; color: #fff; text-align: center; font-size: 12px; }
+.main { max-width: 1000px; margin: 0 auto; padding: 16px 24px 48px; }
+.filters, .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 16px; }
+input, select, button { font: inherit; padding: 6px 10px; }
+.grid { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+.card { background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 12px; }
+.card-title { font-weight: 600; }
+.orders { list-style: none; padding: 0; display: grid; gap: 12px; }
+.price { font-weight: 700; }
+.muted { color: #666; font-size: 13px; }
+.soldout { color: #b3261e; font-weight: 600; }
+.warn { color: #9a6700; }
+.ok { color: #1a7f37; }
+.error { color: #b3261e; }
+.pager { display: flex; gap: 12px; align-items: center; justify-content: center; }
+.table { width: 100%; border-collapse: collapse; background: #fff; }
+.table th, .table td { border-bottom: 1px solid #ddd; padding: 8px; text-align: left; }
+.header nav { align-items: center; }
+.link-button { background: none; border: 0; padding: 0; color: #0b57d0; text-decoration: underline; cursor: pointer; }
+.login-form { display: grid; gap: 12px; max-width: 360px; }
+.login-form label { display: grid; gap: 4px; }
+
+.tabs { display: flex; gap: 16px; margin-bottom: 16px; border-bottom: 1px solid #ddd; }
+.tabs a { padding: 8px 4px; text-decoration: none; color: inherit; }
+.tabs a.router-link-active { border-bottom: 2px solid #0b57d0; font-weight: 600; }
+.form { display: grid; gap: 12px; max-width: 480px; }
+.form label { display: grid; gap: 4px; }
+.form label.inline { display: flex; gap: 8px; align-items: center; }
+.danger { color: #b3261e; }
+.right { text-align: right; }
+.csv-example { background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 8px 12px; overflow-x: auto; font-size: 13px; }

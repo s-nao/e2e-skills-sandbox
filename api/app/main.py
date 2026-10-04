@@ -4,7 +4,7 @@ from fastapi import Depends, FastAPI, HTTPException, Query
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
-from . import auth
+from . import admin, auth
 from .auth import CurrentUser
 from .db import get_session
 from .models import Category, Order, OrderItem, Product
@@ -20,6 +20,7 @@ from .schemas import (
 
 app = FastAPI(title="Sample Shop API")
 app.include_router(auth.router)
+app.include_router(admin.router)
 
 SessionDep = Annotated[Session, Depends(get_session)]
 

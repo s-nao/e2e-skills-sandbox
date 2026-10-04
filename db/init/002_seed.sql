@@ -20,3 +20,7 @@ INSERT INTO products (sku, name, description, category_id, price, stock, is_acti
 INSERT INTO users (email, password_hash, name, is_active) VALUES
   ('customer@example.com', crypt('password123', gen_salt('bf', 12)), '山田 花子', TRUE),
   ('inactive@example.com', crypt('password123', gen_salt('bf', 12)), '停止 済子', FALSE);
+
+-- 店舗管理者（固定の 1 アカウント。パスワードは admin123）
+INSERT INTO users (email, password_hash, name, is_active, is_admin) VALUES
+  ('admin@example.com', crypt('admin123', gen_salt('bf', 12)), '店舗 管理者', TRUE, TRUE);

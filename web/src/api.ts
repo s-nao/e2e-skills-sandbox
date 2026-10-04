@@ -49,7 +49,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     const detail = typeof body.detail === 'string' ? body.detail : '入力内容を確認してください'
     throw new ApiError(res.status, detail)
   }
-  return res.json()
+  return res.status === 204 ? (undefined as T) : res.json()
 }
 
 function toSearchParams(query: Record<string, unknown>): string {
