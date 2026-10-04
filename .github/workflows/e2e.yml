@@ -59,6 +59,15 @@ jobs:
           CI: "true"
         run: npx playwright test
 
+      - name: Write job summary
+        if: always()
+        run: |
+          if [ -f e2e/test-results/results.json ]; then
+            node .claude/skills/e2e-run/scripts/summarize.mjs e2e/test-results/results.json >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "テスト結果（results.json）がありません。Run E2E より前のステップで失敗しています。" >> "$GITHUB_STEP_SUMMARY"
+          fi
+
       - name: Show service logs on failure
         if: failure()
         run: docker compose logs --tail=100
