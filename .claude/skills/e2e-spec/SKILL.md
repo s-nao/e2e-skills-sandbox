@@ -12,7 +12,7 @@ description: フロントエンドの E2E テスト仕様（シナリオ・前�
 
 - `<feature>`: kebab-case の機能名（例: `order-checkout`, `login`）。指定がなければユーザーの依頼文から決めて伝える。
 - `<area>`: 画面・業務のまとまり。既存の `e2e/specs/*/` から選び、合うものが無ければ新しく作る。
-  - 今あるもの: `catalog`（商品一覧・検索 = `product-list`、商品詳細 = `product-detail`）、`checkout`（カート・注文 = `order-checkout`）、`account`（ログイン・ログアウト）
+  - 今あるもの: `catalog`（商品一覧・検索 = `product-list`、商品詳細 = `product-detail`）、`checkout`（カート・注文 = `order-checkout`）、`account`（ログイン・ログアウト）、`admin`（店舗管理画面 = `admin-products`、`admin-csv`、`admin-sales`）
   - テストコード（`e2e/tests/<area>/`）も同じ分け方になる。
 - 対象の範囲（画面・ユースケース）。曖昧なら、コードを読んだうえで「この範囲で書きます」と宣言して進める。質問で止めない。
 

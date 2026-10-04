@@ -15,5 +15,12 @@ export default defineConfig({
     screenshot: 'only-on-failure',
     trace: 'retain-on-failure',
   },
-  projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
+  projects: [
+    { name: 'chromium', testIgnore: '**/admin/**', use: { ...devices['Desktop Chrome'] } },
+    {
+      name: 'admin',
+      testMatch: '**/admin/**/*.spec.ts',
+      use: { ...devices['Desktop Chrome'], baseURL: process.env.E2E_ADMIN_BASE_URL ?? 'http://localhost:5174' },
+    },
+  ],
 })

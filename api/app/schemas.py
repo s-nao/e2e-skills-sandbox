@@ -70,3 +70,56 @@ class UserOut(BaseModel):
     id: int
     email: str
     name: str
+    is_admin: bool
+
+
+class ProductIn(BaseModel):
+    sku: str = Field(min_length=1, max_length=40, pattern=r"^[A-Za-z0-9_-]+$")
+    name: str = Field(min_length=1, max_length=100)
+    description: str = Field(default="", max_length=1000)
+    category_id: int
+    price: int = Field(ge=0, le=10_000_000)
+    stock: int = Field(ge=0, le=1_000_000)
+    is_active: bool = True
+
+
+class AdminProductOut(ProductOut):
+    is_active: bool
+
+
+class AdminProductPage(BaseModel):
+    items: list[AdminProductOut]
+    total: int
+    page: int
+    page_size: int
+
+
+class ImportIn(BaseModel):
+    csv: str = Field(max_length=2_000_000)
+    dry_run: bool = True
+
+
+class ImportRowError(BaseModel):
+    line: int
+    sku: str
+    message: str
+
+
+class ImportResult(BaseModel):
+    dry_run: bool
+    created: int
+    updated: int
+    deleted: int
+    errors: list[ImportRowError]
+
+
+class SalesOrderOut(OrderOut):
+    user_name: str
+    user_email: str
+
+
+class SalesOut(BaseModel):
+    count: int
+    total: int
+    orders: list[SalesOrderOut]
+    truncated: bool

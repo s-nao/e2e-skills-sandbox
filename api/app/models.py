@@ -16,6 +16,7 @@ class User(Base):
     password_hash: Mapped[str]
     name: Mapped[str]
     is_active: Mapped[bool]
+    is_admin: Mapped[bool]
 
 
 class UserSession(Base):
@@ -46,7 +47,7 @@ class Product(Base):
     price: Mapped[int]
     stock: Mapped[int]
     is_active: Mapped[bool]
-    created_at: Mapped[datetime]
+    created_at: Mapped[datetime] = mapped_column(server_default=func.now())
 
     category: Mapped[Category] = relationship(lazy="joined")
 
@@ -60,6 +61,7 @@ class Order(Base):
     total: Mapped[int]
     created_at: Mapped[datetime] = mapped_column(server_default=func.now())
 
+    user: Mapped[User] = relationship(lazy="joined")
     items: Mapped[list["OrderItem"]] = relationship(back_populates="order", lazy="selectin")
 
 

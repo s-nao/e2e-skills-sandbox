@@ -7,6 +7,7 @@ CREATE TABLE users (
     password_hash TEXT NOT NULL,                               -- bcrypt。crypt('pw', gen_salt('bf', 12)) でも作れる
     name          TEXT NOT NULL,
     is_active     BOOLEAN NOT NULL DEFAULT TRUE,               -- FALSE はログイン不可（退会・停止）
+    is_admin      BOOLEAN NOT NULL DEFAULT FALSE,              -- TRUE は店舗管理画面（/admin）を使える
     created_at    TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 

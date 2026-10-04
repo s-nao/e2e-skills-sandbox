@@ -1,0 +1,79 @@
+{
+    "data": {
+        "D1": {
+            "id": 41,
+            "name": "E2E-AS-カテゴリ",
+            "table": "categories"
+        },
+        "D2": {
+            "id": 133,
+            "sku": "E2E-AS-001",
+            "name": "E2E-AS-ノート",
+            "price": 500,
+            "stock": 10,
+            "table": "products",
+            "is_active": true,
+            "description": "E2E テスト用"
+        },
+        "D3": {
+            "id": 64,
+            "name": "E2E-AS-管理者",
+            "email": "e2e-as-admin@example.com",
+            "table": "users",
+            "is_admin": true,
+            "password": "E2E-as-pass1"
+        },
+        "D4": {
+            "id": 65,
+            "name": "E2E-AS-購入者",
+            "email": "e2e-as@example.com",
+            "table": "users",
+            "is_admin": false,
+            "password": "E2E-as-pass1"
+        },
+        "D5": {
+            "id": 59,
+            "table": "orders",
+            "total": 1500,
+            "status": "placed",
+            "user_id": 65
+        },
+        "D6": {
+            "id": 60,
+            "table": "orders",
+            "total": 500,
+            "status": "placed",
+            "user_id": 65
+        },
+        "D7": {
+            "id": 61,
+            "table": "orders",
+            "total": 1000,
+            "status": "placed",
+            "user_id": 65
+        },
+        "D8": {
+            "id": 62,
+            "table": "orders",
+            "total": 500,
+            "status": "cancelled",
+            "user_id": 65
+        },
+        "D9": {
+            "id": 63,
+            "table": "orders",
+            "total": 2000,
+            "status": "placed",
+            "user_id": 65
+        },
+        "D10": {
+            "id": 64,
+            "table": "orders",
+            "total": 500,
+            "status": "placed",
+            "user_id": 65
+        }
+    },
+    "feature": "admin-sales",
+    "generatedAt": "2026-10-04T22:11:41+09:00"
+}
