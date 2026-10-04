@@ -1,0 +1,606 @@
+<title>Sample Shop 仕様書</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@500;700&family=Noto+Sans+JP:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+  :root {
+    --bg: #f5f7f9;
+    --surface: #ffffff;
+    --surface-2: #eef2f5;
+    --text: #1b2230;
+    --muted: #5b6677;
+    --line: #dde3ea;
+    --accent: #1f6f8b;
+    --accent-soft: #e2f0f5;
+    --ok: #1a7f4b;
+    --ok-soft: #e3f4ea;
+    --warn: #9a6200;
+    --warn-soft: #fbf1dc;
+    --danger: #b3261e;
+    --danger-soft: #fbe6e4;
+    --code-bg: #eef2f5;
+    --font-body: "Noto Sans JP", "Hiragino Sans", "Yu Gothic", system-ui, sans-serif;
+    --font-head: "Zen Kaku Gothic New", "Hiragino Sans", "Yu Gothic", system-ui, sans-serif;
+    --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --bg: #11161c;
+      --surface: #182029;
+      --surface-2: #1f2934;
+      --text: #e4e8ee;
+      --muted: #9aa5b3;
+      --line: #2b3643;
+      --accent: #63b6d2;
+      --accent-soft: #17323d;
+      --ok: #5cc98c;
+      --ok-soft: #173326;
+      --warn: #e2b04f;
+      --warn-soft: #3a2d12;
+      --danger: #f0857c;
+      --danger-soft: #3d1c1a;
+      --code-bg: #1f2934;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --bg: #11161c;
+    --surface: #182029;
+    --surface-2: #1f2934;
+    --text: #e4e8ee;
+    --muted: #9aa5b3;
+    --line: #2b3643;
+    --accent: #63b6d2;
+    --accent-soft: #17323d;
+    --ok: #5cc98c;
+    --ok-soft: #173326;
+    --warn: #e2b04f;
+    --warn-soft: #3a2d12;
+    --danger: #f0857c;
+    --danger-soft: #3d1c1a;
+    --code-bg: #1f2934;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.75;
+    padding-inline: 16px;
+  }
+  .layout {
+    max-width: 1180px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 220px minmax(0, 1fr);
+    gap: 48px;
+    padding-block: 40px 80px;
+  }
+  @media (max-width: 860px) {
+    .layout { grid-template-columns: minmax(0, 1fr); gap: 24px; padding-block: 24px 64px; }
+    .toc { position: static !important; }
+  }
+
+  /* 目次 */
+  .toc {
+    position: sticky;
+    top: calc(env(safe-area-inset-top, 0px) + 24px);
+    align-self: start;
+    font-size: 13px;
+    display: grid;
+    gap: 16px;
+  }
+  .toc h2 {
+    font-family: var(--font-head);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 0 0 4px;
+  }
+  .toc ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+  .toc a {
+    display: block;
+    color: var(--text);
+    text-decoration: none;
+    padding: 3px 10px;
+    border-left: 2px solid var(--line);
+  }
+  .toc a:hover, .toc a:focus-visible { border-left-color: var(--accent); color: var(--accent); outline: none; }
+
+  /* 本文 */
+  main { min-width: 0; display: grid; gap: 56px; }
+  header.doc-head { display: grid; gap: 10px; }
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+  }
+  h1 {
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: clamp(28px, 4vw, 38px);
+    line-height: 1.3;
+    margin: 0;
+    text-wrap: balance;
+  }
+  .lede { margin: 0; color: var(--muted); max-width: 62ch; }
+  .part {
+    display: grid;
+    gap: 36px;
+  }
+  .part-title {
+    font-family: var(--font-head);
+    font-size: 13px;
+    letter-spacing: 0.14em;
+    color: var(--accent);
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 8px;
+    margin: 0;
+  }
+  section { display: grid; gap: 14px; scroll-margin-top: 24px; }
+  h2 {
+    font-family: var(--font-head);
+    font-size: 23px;
+    line-height: 1.4;
+    margin: 0;
+    text-wrap: balance;
+  }
+  h3 {
+    font-family: var(--font-head);
+    font-size: 17px;
+    margin: 8px 0 0;
+  }
+  p { margin: 0; max-width: 68ch; }
+  ul.plain, ol.plain { margin: 0; padding-left: 1.3em; display: grid; gap: 4px; max-width: 70ch; }
+  code {
+    font-family: var(--font-mono);
+    font-size: 0.86em;
+    background: var(--code-bg);
+    padding: 1px 5px;
+    border-radius: 4px;
+  }
+  .path { font-family: var(--font-mono); font-size: 0.86em; color: var(--accent); }
+
+  /* 表 */
+  .table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
+  table { border-collapse: collapse; width: 100%; font-size: 14px; }
+  th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { background: var(--surface-2); font-weight: 500; font-size: 12.5px; color: var(--muted); white-space: nowrap; }
+  tr:last-child td { border-bottom: 0; }
+  td.num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+  td.nowrap { white-space: nowrap; }
+
+  .pill {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 1px 8px;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+  .pill.ok { background: var(--ok-soft); color: var(--ok); }
+  .pill.warn { background: var(--warn-soft); color: var(--warn); }
+  .pill.danger { background: var(--danger-soft); color: var(--danger); }
+  .pill.neutral { background: var(--surface-2); color: var(--muted); }
+  .method { font-family: var(--font-mono); font-size: 12px; font-weight: 500; }
+
+  /* 図 */
+  .figure {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 16px;
+    overflow-x: auto;
+  }
+  .figure pre.mermaid { margin: 0; background: none; text-align: center; }
+  .caption { font-size: 12.5px; color: var(--muted); }
+
+  /* 読む順 */
+  .steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; counter-reset: step; }
+  .steps li {
+    counter-increment: step;
+    display: grid;
+    grid-template-columns: 32px minmax(0, 1fr);
+    gap: 12px;
+    align-items: start;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 12px 14px;
+  }
+  .steps li::before {
+    content: counter(step);
+    font-family: var(--font-mono);
+    font-weight: 500;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-size: 13px;
+  }
+  .steps .what { display: grid; gap: 2px; }
+  .steps .why { color: var(--muted); font-size: 14px; }
+
+  /* 要点（ファイル別） */
+  .points { display: grid; gap: 12px; }
+  .point {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 14px 16px;
+    display: grid;
+    gap: 8px;
+  }
+  .point-head { display: flex; flex-wrap: wrap; gap: 8px; align-items: baseline; justify-content: space-between; }
+  .point-head strong { font-family: var(--font-head); font-size: 15.5px; }
+  .point ul { margin: 0; padding-left: 1.2em; display: grid; gap: 4px; }
+
+  .note {
+    border-left: 3px solid var(--warn);
+    background: var(--warn-soft);
+    padding: 10px 14px;
+    border-radius: 0 6px 6px 0;
+    font-size: 14px;
+    max-width: 72ch;
+  }
+  footer { color: var(--muted); font-size: 12.5px; border-top: 1px solid var(--line); padding-top: 16px; }
+
+  @media (prefers-reduced-motion: no-preference) {
+    html { scroll-behavior: smooth; }
+  }
+</style>
+
+<div class="layout">
+  <nav class="toc" aria-label="目次">
+    <div>
+      <h2>動作仕様</h2>
+      <ol>
+        <li><a href="#overview">全体構成</a></li>
+        <li><a href="#screens">画面と遷移</a></li>
+        <li><a href="#rules">業務ルール</a></li>
+        <li><a href="#api">API</a></li>
+        <li><a href="#db">データモデル</a></li>
+        <li><a href="#errors">エラーと表示</a></li>
+      </ol>
+    </div>
+    <div>
+      <h2>コードリーディング</h2>
+      <ol>
+        <li><a href="#order">読む順番</a></li>
+        <li><a href="#flow">注文 1 件の流れ</a></li>
+        <li><a href="#files">ファイル別の要点</a></li>
+        <li><a href="#e2e">E2E の仕組み</a></li>
+        <li><a href="#caveats">既知の注意点</a></li>
+      </ol>
+    </div>
+  </nav>
+
+  <main>
+    <header class="doc-head">
+      <span class="eyebrow">e2e-skills-sandbox · commit cdb93a8 · 2026-10-04</span>
+      <h1>Sample Shop 仕様書</h1>
+      <p class="lede">商品の検索から注文までを扱うサンプルショップの動作仕様と、コードを読むときの要点をまとめたものです。E2E テストのスキル（spec / data-check / data-seed / run）を試すための題材です。</p>
+    </header>
+
+    <!-- ===================== 第 1 部 ===================== -->
+    <div class="part">
+      <p class="part-title">第 1 部　動作仕様</p>
+
+      <section id="overview">
+        <h2>全体構成</h2>
+        <p>3 つのコンテナを <code>docker compose up -d</code> で起動します。ブラウザは web にだけアクセスし、<code>/api</code> へのリクエストは Vite が api に転送します。</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>サービス</th><th>技術</th><th>ポート</th><th>役割</th></tr></thead>
+            <tbody>
+              <tr><td class="nowrap">web</td><td>Vue 3 + Vite + vue-router</td><td class="num">5173</td><td>画面。カートはブラウザの localStorage に保存</td></tr>
+              <tr><td class="nowrap">api</td><td>FastAPI + SQLAlchemy 2.0</td><td class="num">8000</td><td>商品・カテゴリ・注文の API。在庫の引き当て</td></tr>
+              <tr><td class="nowrap">db</td><td>PostgreSQL 16</td><td class="num">55432</td><td>初回起動時に <span class="path">db/init/*.sql</span> でスキーマと初期データを作成</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>認証はありません。注文は顧客のメールアドレスで識別します。</p>
+      </section>
+
+      <section id="screens">
+        <h2>画面と遷移</h2>
+        <div class="figure">
+          <pre class="mermaid">
+flowchart LR
+  L["商品一覧 /"] -->|商品名| D["商品詳細 /products/:id"]
+  L -->|カートに入れる| L
+  D -->|カートに入れる| D
+  L -->|ヘッダーのカート| C["カート /cart"]
+  D -->|ヘッダーのカート| C
+  C -->|注文する 成功| F["注文完了 /orders/complete/:id"]
+  C -->|注文する 失敗| C
+  F -->|注文履歴を見る| H["注文履歴 /orders?email="]
+  L -->|ヘッダーの注文履歴| H
+          </pre>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>画面</th><th>パス</th><th>主な動作</th></tr></thead>
+            <tbody>
+              <tr>
+                <td class="nowrap">商品一覧</td><td class="nowrap"><code>/</code></td>
+                <td>商品名の部分一致検索、カテゴリ、「在庫ありのみ」、並び順（新着・価格の安い順・高い順・名前順）。12 件ごとにページ分け。<strong>検索条件は URL のクエリに入る</strong>ので、リロードや共有で同じ結果を再現できる</td>
+              </tr>
+              <tr>
+                <td class="nowrap">商品詳細</td><td class="nowrap"><code>/products/:id</code></td>
+                <td>説明・価格・在庫数を表示。数量を指定してカートに追加。在庫 0 なら数量欄とボタンの代わりに「在庫切れ」。販売停止の商品は「商品が見つかりません」</td>
+              </tr>
+              <tr>
+                <td class="nowrap">カート</td><td class="nowrap"><code>/cart</code></td>
+                <td>数量の変更（0 で削除）、合計金額。メールアドレスを入れて注文。成功するとカートを空にして完了画面へ。失敗したらエラーを表示し、カートは残す</td>
+              </tr>
+              <tr>
+                <td class="nowrap">注文完了</td><td class="nowrap"><code>/orders/complete/:id</code></td>
+                <td>注文番号を表示。注文履歴へのリンク（メールアドレスを引き継ぐ）</td>
+              </tr>
+              <tr>
+                <td class="nowrap">注文履歴</td><td class="nowrap"><code>/orders?email=</code></td>
+                <td>メールアドレスで注文を新しい順に一覧表示。明細と合計</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="rules">
+        <h2>業務ルール</h2>
+        <h3>在庫の表示</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>在庫数</th><th>一覧のカード</th><th>「カートに入れる」</th><th>「在庫ありのみ」で</th></tr></thead>
+            <tbody>
+              <tr><td class="num">0</td><td><span class="pill danger">在庫切れ</span></td><td>押せない</td><td>除外</td></tr>
+              <tr><td class="num">1〜5</td><td><span class="pill warn">残りわずか（n 点）</span></td><td>押せる</td><td>表示</td></tr>
+              <tr><td class="num">6 以上</td><td>表示なし</td><td>押せる</td><td>表示</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>販売停止（<code>is_active = false</code>）</h3>
+        <ul class="plain">
+          <li>一覧と検索には出ない（件数にも含まれない）</li>
+          <li>詳細ページを URL で直接開くと 404 →「商品が見つかりません」</li>
+          <li>注文に含めると 400 →「商品 {id} は購入できません」</li>
+        </ul>
+
+        <h3>注文</h3>
+        <ul class="plain">
+          <li>1 回の注文で、1 商品あたりの数量は 1〜99。明細は 1 行以上</li>
+          <li>在庫が足りない商品が 1 つでもあれば、<strong>注文全体を受け付けない</strong>（409）。一部だけ注文されることはない</li>
+          <li>成功すると、各商品の在庫から数量を引く。明細の単価は<strong>注文した時点の DB の価格</strong></li>
+          <li>同時に注文されても在庫がマイナスにならないよう、対象の商品の行をロックしてから確認する</li>
+          <li>メールアドレスは形式をチェックする。<code>.test</code> などの予約ドメインは拒否される（422）</li>
+        </ul>
+      </section>
+
+      <section id="api">
+        <h2>API</h2>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>メソッド</th><th>パス</th><th>パラメータ・本文</th><th>応答</th></tr></thead>
+            <tbody>
+              <tr><td class="method">GET</td><td class="nowrap"><code>/api/health</code></td><td>—</td><td><code>{"status":"ok"}</code></td></tr>
+              <tr><td class="method">GET</td><td class="nowrap"><code>/api/categories</code></td><td>—</td><td>カテゴリの配列（id 順）</td></tr>
+              <tr>
+                <td class="method">GET</td><td class="nowrap"><code>/api/products</code></td>
+                <td><code>q</code> 商品名の部分一致 / <code>category_id</code> / <code>in_stock</code> / <code>sort</code> = newest・price_asc・price_desc・name / <code>page</code>（1〜）/ <code>page_size</code>（1〜100、既定 12）</td>
+                <td><code>{items, total, page, page_size}</code></td>
+              </tr>
+              <tr><td class="method">GET</td><td class="nowrap"><code>/api/products/{id}</code></td><td>—</td><td>商品 1 件。販売停止・存在しない場合は 404</td></tr>
+              <tr>
+                <td class="method">POST</td><td class="nowrap"><code>/api/orders</code></td>
+                <td><code>{customer_email, items: [{product_id, quantity}]}</code></td>
+                <td>201 で注文。400 / 409 / 422 は <a href="#errors">エラー</a>を参照</td>
+              </tr>
+              <tr><td class="method">GET</td><td class="nowrap"><code>/api/orders</code></td><td><code>customer_email</code>（必須）</td><td>その顧客の注文を新しい順に</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="caption">起動中は http://localhost:8000/docs で Swagger UI を見られます（FastAPI が自動生成）。</p>
+      </section>
+
+      <section id="db">
+        <h2>データモデル</h2>
+        <div class="figure">
+          <pre class="mermaid">
+erDiagram
+  categories ||--o{ products : "category_id"
+  products ||--o{ order_items : "product_id"
+  orders ||--|{ order_items : "order_id"
+  categories {
+    serial id PK
+    text name UK
+  }
+  products {
+    serial id PK
+    text sku UK
+    text name
+    int price "税込・円"
+    int stock "0 以上"
+    bool is_active "false で販売停止"
+  }
+  orders {
+    serial id PK
+    text customer_email
+    text status "placed / cancelled"
+    int total
+    timestamptz created_at
+  }
+  order_items {
+    serial id PK
+    int quantity "1 以上"
+    int unit_price "注文時の価格"
+  }
+          </pre>
+        </div>
+        <ul class="plain">
+          <li>スキーマは <span class="path">db/init/001_schema.sql</span>、開発用の初期データ（11 商品、うち 1 件は販売停止）は <span class="path">002_seed.sql</span></li>
+          <li>マイグレーションの仕組みはなく、スキーマを変えたら <code>docker compose down -v</code> で作り直す</li>
+          <li><code>status = 'cancelled'</code> は定義だけで、キャンセルの機能はまだない</li>
+        </ul>
+      </section>
+
+      <section id="errors">
+        <h2>エラーと表示</h2>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>状況</th><th>API</th><th>画面の表示</th></tr></thead>
+            <tbody>
+              <tr><td>在庫不足</td><td><span class="pill warn">409</span></td><td>「「{商品名}」の在庫が不足しています（残り n 点）」</td></tr>
+              <tr><td>販売停止・存在しない商品を注文</td><td><span class="pill warn">400</span></td><td>「商品 {id} は購入できません」</td></tr>
+              <tr><td>入力の形式エラー（メールアドレスなど）</td><td><span class="pill warn">422</span></td><td>「入力内容を確認してください」（どの項目かは出ない）</td></tr>
+              <tr><td>販売停止・存在しない商品の詳細</td><td><span class="pill neutral">404</span></td><td>「商品が見つかりません」</td></tr>
+              <tr><td>一覧の取得に失敗</td><td><span class="pill danger">5xx など</span></td><td>「商品の取得に失敗しました」</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="caption">API のエラーの <code>detail</code> が文字列ならそのまま表示し、そうでなければ（422 の配列など）定型文にする。<span class="path">web/src/api.ts:41</span></p>
+      </section>
+    </div>
+
+    <!-- ===================== 第 2 部 ===================== -->
+    <div class="part">
+      <p class="part-title">第 2 部　コードリーディングの要点</p>
+
+      <section id="order">
+        <h2>読む順番</h2>
+        <p>データの形 → それを扱う API → 画面、の順に読むと迷いません。全部で 1,000 行ほどです。</p>
+        <ol class="steps">
+          <li><div class="what"><span class="path">db/init/001_schema.sql</span><span class="why">テーブルは 4 つだけ。CHECK 制約（在庫 0 以上など）が DB 側の最後の防衛線になっている</span></div></li>
+          <li><div class="what"><span class="path">api/app/models.py</span> → <span class="path">schemas.py</span><span class="why">models は DB の行、schemas は API の入出力。入力のバリデーション（数量 1〜99、メール形式）は schemas にある</span></div></li>
+          <li><div class="what"><span class="path">api/app/main.py</span><span class="why">全 API が 1 ファイルに入っている。一覧の検索条件の組み立て（51 行目〜）と、注文の在庫引き当て（97 行目〜）が中心</span></div></li>
+          <li><div class="what"><span class="path">web/src/api.ts</span> → <span class="path">cart.ts</span><span class="why">画面から API を呼ぶ窓口と、カートの状態。画面のコードはこの 2 つを使うだけ</span></div></li>
+          <li><div class="what"><span class="path">web/src/pages/ProductListPage.vue</span> → <span class="path">CartPage.vue</span><span class="why">URL を状態として扱う一覧と、注文を送るカート。ほかの画面はこの 2 つの縮小版</span></div></li>
+          <li><div class="what"><span class="path">e2e/</span> と <span class="path">.claude/skills/</span><span class="why">アプリが分かってから。spec → data → tests → reports の順にファイルを追う</span></div></li>
+        </ol>
+      </section>
+
+      <section id="flow">
+        <h2>注文 1 件の流れ</h2>
+        <div class="figure">
+          <pre class="mermaid">
+sequenceDiagram
+  participant U as ブラウザ（CartPage）
+  participant V as Vite（/api を転送）
+  participant A as FastAPI create_order
+  participant D as PostgreSQL
+  U->>V: POST /api/orders {email, items}
+  V->>A: 転送
+  A->>A: OrderIn で検証（失敗なら 422）
+  A->>D: SELECT products ... FOR UPDATE OF products
+  Note over A,D: 対象の商品の行をロック
+  A->>A: 販売中か（400）・在庫は足りるか（409）
+  A->>D: UPDATE stock / INSERT orders, order_items
+  A->>D: COMMIT（ロック解放）
+  A-->>U: 201 OrderOut
+  U->>U: カートを空にして /orders/complete/:id へ
+          </pre>
+        </div>
+        <p>エラーで <code>HTTPException</code> を投げると、コミットされないままセッションが閉じるので、在庫の減算も含めてすべて取り消されます。</p>
+      </section>
+
+      <section id="files">
+        <h2>ファイル別の要点</h2>
+        <div class="points">
+          <div class="point">
+            <div class="point-head"><strong>注文の在庫引き当て</strong><span class="path">api/app/main.py:97</span></div>
+            <ul>
+              <li><code>with_for_update(of=Product)</code> の <code>of=</code> は必須。商品とカテゴリは外部結合で読み込む設定のため、これが無いと PostgreSQL が「外部結合の NULL になりうる側はロックできない」とエラーにする</li>
+              <li>同じ商品が明細に 2 回出ても、同じ <code>product</code> オブジェクトから在庫を引くので、合計で判定される</li>
+              <li><code>order.total</code> は API で計算する。画面から送られた金額は使わない</li>
+            </ul>
+          </div>
+          <div class="point">
+            <div class="point-head"><strong>商品一覧の検索</strong><span class="path">api/app/main.py:41</span></div>
+            <ul>
+              <li>条件をリストに積んで <code>where(*conditions)</code> に渡す。件数と一覧で同じ条件を使い回す</li>
+              <li>並び順は <code>SORT_COLUMNS</code>（23 行目）の辞書。同じ値のときの順序がぶれないよう、必ず <code>id</code> を第 2 キーにしている（ページ送りで重複・抜けが出ないため）</li>
+              <li><code>ILIKE '%…%'</code> は通常のインデックスが効かない。大量データでの性能測定の対象</li>
+            </ul>
+          </div>
+          <div class="point">
+            <div class="point-head"><strong>URL を状態として扱う一覧画面</strong><span class="path">web/src/pages/ProductListPage.vue:50</span></div>
+            <ul>
+              <li>「検索」ボタンは API を直接呼ばず、URL のクエリを書き換えるだけ（<code>search()</code>）</li>
+              <li><code>route.query</code> を <code>watch</code> して API を呼ぶ（67 行目）。戻る・進む・リロードでも同じ経路を通る</li>
+              <li>既定値（新着順、1 ページ目）は URL に出さない。<code>?q=…</code> の形が E2E のテストで使われている</li>
+            </ul>
+          </div>
+          <div class="point">
+            <div class="point-head"><strong>カートの状態</strong><span class="path">web/src/cart.ts</span></div>
+            <ul>
+              <li>モジュールの最上位にある <code>reactive</code> 配列を全画面で共有する（Pinia は使っていない）</li>
+              <li>変更されるたびに localStorage に保存する（18 行目）。<strong>商品オブジェクトを丸ごと保存する</strong>ので、価格や在庫は追加した時点のまま</li>
+              <li>テンプレートで <code>cart.total.value</code> と書くのは、<code>cart</code> がただのオブジェクトで、中の computed が自動では展開されないため</li>
+            </ul>
+          </div>
+          <div class="point">
+            <div class="point-head"><strong>API の呼び出しとエラー</strong><span class="path">web/src/api.ts:41</span></div>
+            <ul>
+              <li>全 API がここを通る。<code>ApiError</code> にステータスコードを持たせ、画面側は 404 などで表示を分ける</li>
+              <li><code>toSearchParams</code> は空文字と <code>false</code> を送らない。<code>in_stock=false</code> を明示的に送る手段はない</li>
+            </ul>
+          </div>
+          <div class="point">
+            <div class="point-head"><strong>テスト用の目印</strong><span class="path">web/src/pages/*.vue</span></div>
+            <ul>
+              <li>操作・確認の対象には <code>data-testid</code> を付ける。商品カードとカートの行には <code>data-sku</code> もある</li>
+              <li>文言や CSS クラスを変えても E2E が壊れないように、テストは <code>data-testid</code> だけを使う。<strong>画面を直すときは、この属性を消さない</strong></li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section id="e2e">
+        <h2>E2E の仕組み</h2>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>ファイル</th><th>役割</th><th>読むときの要点</th></tr></thead>
+            <tbody>
+              <tr><td class="nowrap"><span class="path">scripts/_db.sh</span></td><td>接続先の切り替え</td><td><code>E2E_DB_URL</code> が無ければ docker の db、あれば psql（無ければ docker の psql）</td></tr>
+              <tr><td class="nowrap"><span class="path">scripts/db-query.sh:19</span></td><td>読み取り専用</td><td><code>PGOPTIONS=default_transaction_read_only=on</code> で、書き込み系の SQL は DB 側で拒否される</td></tr>
+              <tr><td class="nowrap"><span class="path">scripts/db-exec.sh:20</span></td><td>書き込み</td><td>3 つの安全装置：本番らしい名前、ホストの許可リスト、1 行目の <code>-- e2e-data:</code></td></tr>
+              <tr><td class="nowrap"><span class="path">e2e/tests/fixtures.ts</span></td><td>全テスト共通</td><td><code>auto: true</code> のフィクスチャで、API の応答時間・ページの読み込み時間・console.error を自動で記録してテスト結果に添付する</td></tr>
+              <tr><td class="nowrap"><span class="path">e2e/tests/db.ts</span></td><td>DB の確認</td><td>テストの中から <code>db-query.sh</code> を呼ぶ。期待結果の「DB」の確認に使う</td></tr>
+              <tr><td class="nowrap"><span class="path">e2e/data/*.fixtures.json</span></td><td>テストデータの値</td><td>seed のたびに id が変わるので手で書かない。<code>*.fixtures.sql</code> の出力を保存する</td></tr>
+              <tr><td class="nowrap"><span class="path">.claude/skills/e2e-run/scripts/summarize.mjs</span></td><td>レポート</td><td>Playwright の <code>results.json</code> から添付を取り出し、シナリオ別・API 別に集計する</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>テストデータは機能ごとのプレフィックス（例：<code>E2E-OC-</code>）で始め、作成も削除もプレフィックスで行います。開発用の初期データには依存しません。</p>
+      </section>
+
+      <section id="caveats">
+        <h2>既知の注意点</h2>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>内容</th><th>影響</th><th>場所</th></tr></thead>
+            <tbody>
+              <tr><td>カートは追加した時点の価格を表示するが、注文は DB の現在の価格で計算する</td><td><span class="pill warn">要仕様決定</span> 価格が変わると、カートの合計と実際の請求額がずれる</td><td class="nowrap"><span class="path">cart.ts</span></td></tr>
+              <tr><td>422 のとき、どの項目が悪いのかが画面に出ない</td><td><span class="pill warn">UX</span> ブラウザの検証は通るメールアドレスで起きる</td><td class="nowrap"><span class="path">api.ts:41</span></td></tr>
+              <tr><td>注文履歴はメールアドレスを知っていれば誰でも見られる</td><td><span class="pill danger">本番なら要対応</span> サンプルなので認証を省いている</td><td class="nowrap"><span class="path">main.py:129</span></td></tr>
+              <tr><td>商品名の検索が <code>ILIKE '%…%'</code></td><td><span class="pill neutral">性能</span> データが増えると全件を走査する。pg_trgm のインデックスなどで対策できる</td><td class="nowrap"><span class="path">main.py:53</span></td></tr>
+              <tr><td>カート内の在庫数は更新されない</td><td><span class="pill neutral">UX</span> 在庫切れは注文した時点で初めて分かる（409）</td><td class="nowrap"><span class="path">cart.ts</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="note">上の 2 件（価格のずれ、422 の表示）は、試運転のレポート <span class="path">e2e/reports/order-checkout-20261004-1510.md</span> と spec の「未確定の点」にも記録しています。</p>
+      </section>
+
+      <footer>この資料は commit <code>cdb93a8</code> 時点のコードから作成しました。行番号はコードの変更でずれることがあります。</footer>
+    </div>
+  </main>
+</div>
