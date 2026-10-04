@@ -1,0 +1,67 @@
+{
+  "folders": [
+    { "name": "📦 root", "path": "." },
+    { "name": "🧪 e2e (Playwright)", "path": "e2e" },
+    { "name": "🧰 skills", "path": ".claude/skills" },
+    { "name": "🖥 web (Vue)", "path": "web" },
+    { "name": "⚙️ api (FastAPI)", "path": "api" }
+  ],
+  "settings": {
+    "files.exclude": {
+      "**/node_modules": true,
+      "**/__pycache__": true
+    },
+    "search.exclude": {
+      "**/test-results": true,
+      "**/playwright-report": true,
+      "**/package-lock.json": true
+    },
+    "explorer.fileNesting.enabled": true,
+    "explorer.fileNesting.patterns": {
+      "*.seed.sql": "${capture}.cleanup.sql, ${capture}.fixtures.sql, ${capture}.fixtures.json, ${capture}.check.md"
+    },
+    "markdown.preview.breaks": true
+  },
+  "extensions": {
+    "recommendations": [
+      "ms-playwright.playwright",
+      "Vue.volar",
+      "ms-python.python",
+      "ms-azuretools.vscode-docker"
+    ]
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "アプリ起動 (docker compose up)",
+        "type": "shell",
+        "command": "docker compose up -d",
+        "options": { "cwd": "${workspaceFolder:📦 root}" },
+        "problemMatcher": []
+      },
+      {
+        "label": "DB を初期状態に戻す",
+        "type": "shell",
+        "command": "docker compose down -v && docker compose up -d",
+        "options": { "cwd": "${workspaceFolder:📦 root}" },
+        "problemMatcher": []
+      },
+      {
+        "label": "E2E 実行 (全件)",
+        "type": "shell",
+        "command": "npx playwright test",
+        "options": { "cwd": "${workspaceFolder:🧪 e2e (Playwright)}" },
+        "problemMatcher": []
+      },
+      {
+        "label": "E2E レポートを開く",
+        "type": "shell",
+        "command": "npx playwright show-report",
+        "options": { "cwd": "${workspaceFolder:🧪 e2e (Playwright)}" },
+        "isBackground": true,
+        "problemMatcher": []
+      }
+    ]
+  }
+}
