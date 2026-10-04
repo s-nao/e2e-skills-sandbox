@@ -287,7 +287,7 @@
 
   <main>
     <header class="doc-head">
-      <span class="eyebrow">e2e-skills-sandbox · commit ee0a330 · 2026-10-04</span>
+      <span class="eyebrow">e2e-skills-sandbox · commit 091353f · 2026-10-04</span>
       <h1>Sample Shop 仕様書</h1>
       <p class="lede">商品の検索から注文までを扱うサンプルショップ（ログイン付き）の動作仕様と、コードを読むときの要点をまとめたものです。E2E テストのスキル（spec / data-check / data-seed / run）を試すための題材です。</p>
     </header>
@@ -682,13 +682,13 @@ sequenceDiagram
               <tr><td class="nowrap"><span class="path">e2e/support/fixtures.ts</span></td><td>全テスト共通</td><td><code>test.use({ loginAs: D6 })</code> でログイン済みから開始（API でログインし、ワーカーごとに 1 ユーザー 1 回だけ）。API の応答時間・ページの読み込み時間・console.error・想定外の 401 を自動で記録してテスト結果に添付する</td></tr>
               <tr><td class="nowrap"><span class="path">e2e/support/db.ts</span></td><td>DB の確認</td><td>テストの中から <code>db-query.sh</code> を呼ぶ。期待結果の「DB」の確認に使う</td></tr>
               <tr><td class="nowrap"><span class="path">e2e/pages/*.ts</span></td><td>Page Object</td><td>画面ごとの要素と操作。操作の前に <code>toBeVisible()</code> で確かめ、要素が無いときに 30 秒待たずに「何が無いか」で失敗させる</td></tr>
-              <tr><td class="nowrap"><span class="path">e2e/tests/&lt;area&gt;/</span></td><td>テスト</td><td><code>checkout/order-checkout</code>（7 件）と <code>account/login</code>（9 件）。ファイル同士は並列、ファイルの中は順番に流れる</td></tr>
+              <tr><td class="nowrap"><span class="path">e2e/tests/&lt;area&gt;/</span></td><td>テスト</td><td><code>catalog/product-list</code>（5 件）、<code>catalog/product-detail</code>（5 件）、<code>checkout/order-checkout</code>（3 件）、<code>account/login</code>（9 件）。ファイル同士は並列、ファイルの中は順番に流れる。商品一覧・詳細・注文はログインなし／ありの表示の違い（ヘッダー、カートの <code>place-order</code> ↔ <code>login-to-order</code>）をそれぞれ確かめる</td></tr>
               <tr><td class="nowrap"><span class="path">e2e/data/*.fixtures.json</span></td><td>テストデータの値</td><td>seed のたびに id が変わるので手で書かない。<code>*.fixtures.sql</code> の出力を保存する</td></tr>
               <tr><td class="nowrap"><span class="path">.claude/skills/e2e-run/scripts/summarize.mjs</span></td><td>レポート</td><td>Playwright の <code>results.json</code> から添付を取り出し、シナリオ別・API 別に集計する</td></tr>
             </tbody>
           </table>
         </div>
-        <p>テストデータは機能ごとのプレフィックス（例：<code>E2E-OC-</code>）で始め、作成も削除もプレフィックスで行います。テストユーザーも機能ごとに作り、開発用の初期データ（<code>customer@example.com</code> など）には依存しません。ログアウトのテストは、使い回しているログイン状態を壊さないよう専用のユーザーを使います。</p>
+        <p>テストデータは機能ごとのプレフィックス（例：<code>E2E-PL-</code> 一覧、<code>E2E-PD-</code> 詳細、<code>E2E-OC-</code> 注文）で始め、作成も削除もプレフィックスで行います。テストユーザーも機能ごとに作り、開発用の初期データ（<code>customer@example.com</code> など）には依存しません。ログアウトのテストは、使い回しているログイン状態を壊さないよう専用のユーザーを使います。</p>
       </section>
 
       <section id="caveats">
@@ -710,7 +710,7 @@ sequenceDiagram
         <p class="note">「価格のずれ」「ログインの試行回数」「ログアウト後のカート」は、各 spec の「未確定の点」にも記録しています（<span class="path">e2e/specs/checkout/order-checkout.md</span>、<span class="path">e2e/specs/account/login.md</span>）。以前あった「注文履歴が誰でも見られる」問題は、ログインの導入で解消しました。</p>
       </section>
 
-      <footer>この資料は commit <code>ee0a330</code> 時点のコードから作成しました。行番号はコードの変更でずれることがあります。</footer>
+      <footer>この資料は commit <code>091353f</code> 時点のコードから作成しました。行番号はコードの変更でずれることがあります。</footer>
     </div>
   </main>
 </div>

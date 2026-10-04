@@ -38,6 +38,7 @@ e2e/
   - `D<n>` → `test.describe` でまとめ、その中で `test.use({ loginAs: fixtures.data.D<n> })`。API でログインした状態から始まる。画面のログイン操作は書かない。
   - `なし` → 何も書かない（未ログインで始まる）。手順にログイン画面の操作があれば `LoginPage.login()` を使う。
   - ログイン済みのシナリオの最初で `header.expectLoggedInAs(name)` を確認する。ログインに失敗していたとき、後の操作のタイムアウトではなく、ここで分かりやすく失敗させるため。
+- **最上位の describe**: ファイル全体を `test.describe('<spec の title>', () => { ... })` で包む（HTML レポートで機能名が見出しになる）。その中でログインの有無などの describe を入れ子にする。
 - **グループ化**: `test.describe` で「ログインの有無」や「画面のまとまり」ごとにまとめる。`tags: [smoke]` のシナリオには `{ tag: '@smoke' }` を付ける。
 - **Page Object**: 要素の取得と、2 手以上の操作は `e2e/pages/` のクラスに置く。必要なものが無ければ追加する。
   - 要素は `page.getByTestId(...)` で取る。CSS セレクタや XPath は使わない（商品カードの `data-sku` のような属性の絞り込みは可）。
